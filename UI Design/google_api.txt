@@ -1,0 +1,22 @@
+-Google's OAuth 2.0 client api-
+
+Using Google's login api will allow us to ensure users need 
+a working @nyu.edu gmail to login and use the platform
+to address concerns userts may have over security.
+
+General Overview:
+
+- An OAuth 2.0 client is created and configured on the credentials page: https://console.developers.google.com/apis/credentials
+
+- Use Google Platform Library on web pages
+
+- Callback client id created under credentials
+
+- Once previous steps are setup, a button can be added to automatically redirect users to "sign in with Google"
+
+- Once user signs in with Google, webapp can access user's Google ID, name, profile URL, 
+  and email address to autopopulate a new account; using getBasicProfile() method
+
+- For signout, webapp will have a sign out button linked onclick to call GoogleAuth.signOut() method
+
+Detailed walkthrough can be found at https://developers.google.com/identity/sign-in/web/sign-in
