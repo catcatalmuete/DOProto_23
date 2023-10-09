@@ -1,0 +1,16 @@
+Misc. Product Search Functionality
+
+- sorting by price range & location
+
+- "no result" message for searches that turn up empty
+
+- items will be manually or automatically classified into general categories to narrow searches
+
+- keyword search for more specific searches, and potential to include autocomplete in search bar as a further feature
+
+- related item recommendations based on products users engage with, purchase, or save
+
+- implementation of sponsored items, like on Amazon, to visually incentivize certain results of different search filters at a cost
+
+- database to handle user accounts, which can maintain saved products and possibly user preferences set in settings in an attempt to personalize search experience as much as possible
+
