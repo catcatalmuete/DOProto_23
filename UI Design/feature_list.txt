@@ -1,10 +1,26 @@
 Login Page
+	- NYU Verification
+
 Sign Up Page
+	- NYU Verification
+	- Personal info
+		- Phone number
+		- email
+		- username? or actual name?
 Account Profile
-- Direct Messaging
+	- Direct Messaging
+	- Rating 
+	- Past projects sold
+
 Main Homepage
-- Buy Homepage
-- Sell Homepage 
-- Reviews
+	- Buy Homepage
+		- by catagory
+		- by brand
+		- by distance
+	- Sell Homepage 
+	- maps
+		- google maps
+		- NYU Buildings pinned
+	- Reviews
 
 
