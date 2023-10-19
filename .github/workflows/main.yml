@@ -44,7 +44,7 @@ jobs:
         # uses: supercharge/mongodb-github-action@1.8.0
 
       - name: Install Python packages.
-        run: pip install -r requirements.txt
+        run: make dev_env
 
 
       - name: Run Python tests.
