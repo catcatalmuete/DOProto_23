@@ -13,8 +13,8 @@ on:
   workflow_dispatch:
 
 env:
-  DEMO_HOME: /home/runner/work/DOProto_23/
-  PYTHONPATH: /home/runner/work/DOProto_23/
+  DEMO_HOME: /home/runner/work/DOProto_23/DOProto_23/
+  PYTHONPATH: /home/runner/work/DOProto_23/DOProto_23/
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
