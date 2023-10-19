@@ -1,6 +1,4 @@
 -r requirements.txt
-flask
-flask_restx
 flake8
 pytest
 pytest-cov
