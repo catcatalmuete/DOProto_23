@@ -1,1 +1,6 @@
-Out database will contain:
+Entities:
+User login info (using google login)
+Display names
+Locations
+Products listed
+Watch list per user
