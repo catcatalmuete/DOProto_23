@@ -16,6 +16,6 @@ EXPOSE 5000
 
 ENV FLASK_APP=server/endpoints.py
 
-ENV MONGO_URI mongodb://your-db-uri
+ENV MONGO_URI mongodb://this is where database will be accessed once configured 
 
 CMD ["flask", "run", "--host=0.0.0.0"]
