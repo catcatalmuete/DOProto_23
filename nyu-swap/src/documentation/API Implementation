@@ -1,0 +1,52 @@
+API Server Setup
+1- create API 
+2- make initial request 
+3- create edit delete requests to server, THEN update local data
+
+Create new node package using JSON Server
+
+JSON Server:
+
+npm install json-server
+
+Create db.json file inside the root of your project.
+Add in and save:
+
+{
+“todos”: []
+}
+
+Open up package.json add the command
+
+"server": "json-server -p 3001 --watch db.json"
+to run the command ( second tab)
+
+npm run server
+
+Terminal Pop-up:
+Resources
+http://localhost:3001/todos
+
+Home
+http://localhost:3001
+
+Update script about the host location:
+Put db.json inside the root of your project:
+
+"server": "json-server --port 3001 --watch db.json --host 127.0.0.1",
+If you moved db.json into a folder named server/ at the root of your project
+
+"server": "json-server --port 3001 --watch server/db.json --host 127.0.0.1",
+Make sure your have REST Client installed and enabled in VS Code
+
+Open your projects in 2 tabs in terminal.
+
+in the first tab run npm start
+in the second tab run npm run server
+NOTE: since we are fetching our todos list on load from our db.json now, only running rpm start will throw an error. make sure your server is up and running before running your dev server project!
+
+We can test API calls with our api.http file by clicking the send request button that appears above each route. These will not work unless we are running our server. Let’s take a moment to test them now.
+
+After that let’s make sure all of our functionality is working in our app.
+
+Once we are all on the same page it’s time to move on to an exciting refactor. Remember how tedious it was passing all of those functions down from App into children, and children of children? It can get confusing for sure and opens up a lot of opportunity for simple errors. Today we will explore an alternative to props alone: Context!
