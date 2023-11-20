@@ -17,3 +17,41 @@ window.history.pushstate({}, “”, /route1)
 window.history.pushstate({}, “”, /route2)
 
 Add an event listener for a popstate event
+
+Change the content on the screen:
+
+import {useContext} from 'react'
+import NavigationContext from '../context/navigation'
+export default function Route({path, children}) {
+  const {currentPath} = useContext(NavigationContext)
+
+  if (path === currentPath) {
+    return {children}
+  } else {
+    return null
+  }
+}
+
+App.js: import Route component and pages
+
+import Link from './components/Link'
+import Route from './components/Route'
+import AccordionPage from './pages/AccordionPage'
+import ButtonPage from './pages/ButtonPage'
+
+export default function App() {
+  return (
+    <div>
+      <Link to="/accordion">Go to accordion</Link>
+      <Link to="/button">Go to buttons</Link>
+      <div>
+        <Route path="/accordion">
+          <AccordionPage />
+        </Route>
+        <Route path="/button">
+          <ButtonPage />
+        </Route>
+      </div>
+    </div>
+  )
+}
