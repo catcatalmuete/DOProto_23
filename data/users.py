@@ -3,7 +3,7 @@ This module interfaces to our user data.
 """
 USERNAME = "username"
 PASSWORD = "password"
-MIN_USER_NAME_LEN = 8
+MIN_USER_NAME_LEN = 6
 MIN_PASSWORD_LEN = 8
 
 def get_users():

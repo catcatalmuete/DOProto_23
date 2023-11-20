@@ -1,5 +1,5 @@
 
-import server.endpoints as ep
+from server import endpoints
 
 
 def test_hello():
