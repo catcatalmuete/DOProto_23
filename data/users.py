@@ -13,6 +13,14 @@ def get_users():
     dbc.connect_db()
     return dbc.fetch_all_as_dict(USERNAME, USERS_COLLECT)
 
+def create_user():
+    dbc.connect_db()
+    return dbc.insert_one(USERS_COLLECT)
+
+def delete_user():
+    dbc.connect_db()
+    return dbc.del_one(USERS_COLLECT)
+
 # def old_get_users():
 #     users = {
         

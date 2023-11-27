@@ -75,6 +75,19 @@ class Users(Resource):
         """
         This method returns all users.
         """
+    
+    def post(self):
+        """
+        This method creates a new user.
+        """
+        return usr.create_user()
+    
+    def delete(self):
+        """
+        This method deletes a user.
+        """
+        return usr.delete_user()
+
         return usr.get_users(), 201
     
 # for product listing
