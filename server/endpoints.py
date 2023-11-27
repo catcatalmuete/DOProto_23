@@ -75,6 +75,7 @@ class Users(Resource):
         """
         This method returns all users.
         """
+        return usr.get_users(), 201
     
     def post(self):
         """
@@ -88,7 +89,7 @@ class Users(Resource):
         """
         return usr.delete_user()
 
-        return usr.get_users(), 201
+        
     
 # for product listing
 @api.route(f'/{ADD_PRODUCT}')
