@@ -14,6 +14,7 @@ api = Api(app)
 USERS = 'users'
 ADD_PRODUCT = 'add_product'
 UPDATE_PRODUCT = 'update_product'
+SHOPPING_CART = 'shopping_cart'
 
 
 @api.route('/hello')
@@ -156,4 +157,16 @@ class UpdateProduct(Resource):
         else:
             return {'message': 'Failed to update product'}, 409
         
+# Use get_shopping_cart() from users.py to show all products in user shopping cart
+@api.route(f'/{SHOPPING_CART}')
+class ShoppingCart(Resource):
+    """
+    This class supports fetching user's shopping cart.
+    """
+    def get(self):
+        """
+        This method returns all products shopping cart.
+        """
+        return usr.get_shopping_cart(), 201
+
 
