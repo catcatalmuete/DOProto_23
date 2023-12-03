@@ -169,4 +169,15 @@ class ShoppingCart(Resource):
         """
         return usr.get_shopping_cart(), 201
 
+    def post(self):
+        """
+        This method adds a product to user shopping cart.
+        """
+        return usr.add_shopping_cart()
+    
+    def delete(self):
+        """
+        This method deletes a product from user shopping cart.
+        """
+        return usr.delete_shopping_cart()
 
