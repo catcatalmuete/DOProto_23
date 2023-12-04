@@ -9,6 +9,7 @@ SHOPPING_CART = []
 MIN_USER_NAME_LEN = 6
 MIN_PASSWORD_LEN = 8
 USERS_COLLECT = "users"
+SHOPPING_CART = ["shopping_cart"] # list of products in user shopping cart
 
 
 def get_users():
@@ -33,6 +34,18 @@ def create_user(username, user_id, password, shopping_cart):
 def delete_user(user_filter, user_collection):
     dbc.connect_db()
     return dbc.del_one(user_filter, user_collection)
+
+def get_shopping_cart():
+    dbc.connect_db()
+    return dbc.fetch_all_as_dict(SHOPPING_CART, USERS_COLLECT) # return all products in user shopping cart
+
+def add_shopping_cart():
+    dbc.connect_db()
+    return dbc.insert_one(SHOPPING_CART, USERS_COLLECT) # add a product to user shopping cart 
+
+def delete_shopping_cart():
+    dbc.connect_db()
+    return dbc.del_one(SHOPPING_CART, USERS_COLLECT) # delete a product from user shopping cart
 
 # def old_get_users():
 #     users = {

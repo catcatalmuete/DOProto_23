@@ -14,6 +14,8 @@ api = Api(app)
 
 USERS = 'users'
 ADD_PRODUCT = 'add_product'
+UPDATE_PRODUCT = 'update_product'
+SHOPPING_CART = 'shopping_cart'
 GET_PRODUCT = "get_product"
 MAIN_MENU = ""
 
@@ -158,7 +160,61 @@ class AddProduct(Resource):
             return {'message': 'Product added successfully'}, 201
         else:
             return {'message': 'Failed to add product'}, 409
-            
+        
 
+# Updating product information
+@api.route(f'/{UPDATE_PRODUCT}')
+class UpdateProduct(Resource):
+    """
+    This class supports users updating their product information
+    """
+    def put(self):
+        data = request.get_json()
+        
+        # validation of product before updating
+        if 'name' not in data or 'price' not in data \
+            or 'condition' not in data or 'brand' not in data \
+                    or 'categories' not in data or 'date_posted' not in data \
+                        or 'comments' not in data:
+            return {'message': 'All fields required for updating product'}
+
+        # update the product
+        updated_product = prods.update_product(
+            data['name'], 
+            data['price'],
+            data['condition'],
+            data['brand'],
+            data['categories'],
+            data['date_posted'],
+            data['comments'],
+            )  
+        
+        if updated_product:
+            return {'message': 'Product updated successfully'}, 201
+        else:
+            return {'message': 'Failed to update product'}, 409
+        
+# Use get_shopping_cart() from users.py to show all products in user shopping cart
+@api.route(f'/{SHOPPING_CART}')
+class ShoppingCart(Resource):
+    """
+    This class supports fetching user's shopping cart.
+    """
+    def get(self):
+        """
+        This method returns all products shopping cart.
+        """
+        return usr.get_shopping_cart(), 201
+
+    def post(self):
+        """
+        This method adds a product to user shopping cart.
+        """
+        return usr.add_shopping_cart()
     
-    
+    def delete(self):
+        """
+        This method deletes a product from user shopping cart.
+        """
+        return usr.delete_shopping_cart()
+
