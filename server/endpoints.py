@@ -8,6 +8,8 @@ from flask_restx import Resource, Api
 import data.users as usr
 import data.add_product as prods
 import data.get_product as get_prod
+import data.add_followers as add_follower
+import data.get_followers as get_follower
 
 app = Flask(__name__)
 api = Api(app)
@@ -17,6 +19,9 @@ ADD_PRODUCT = 'add_product'
 UPDATE_PRODUCT = 'update_product'
 SHOPPING_CART = 'shopping_cart'
 GET_PRODUCT = "get_product"
+FOLLOWERS = 'followers'
+ADD_FOLLOWERS = 'add_followers'
+GET_FOLLOWERS = 'get_followers'
 MAIN_MENU = ""
 
 @api.route('/hello')
@@ -217,4 +222,15 @@ class ShoppingCart(Resource):
         This method deletes a product from user shopping cart.
         """
         return usr.delete_shopping_cart()
+
+@api.route(f'/{FOLLOWERS}')
+class Followers(Resource):
+    """
+    This class supports fetching user's followers.
+    """
+    def get(self):
+        """
+        This method returns all followers.
+        """
+        return usr.get_followers(), 201
 
