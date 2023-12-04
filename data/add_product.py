@@ -1,6 +1,7 @@
 import data.db_connect as dbc
 
 PRODUCTS_COLLECT = "products"
+USER_ID = "user_id"
 PRODUCT_NAME = "name"
 PRODUCT_PRICE = "price"
 PRODUCT_CONDITION = "condition"
@@ -20,7 +21,7 @@ Params:
  - comments (str) : comments from the seller
 """
 
-def add_products(name, price, condition, brand, categories, date_posted, comments):
+def add_products(user_id, name, price, condition, brand, categories, date_posted, comments):
 	dbc.connect_db()
 
 	# check if product already exists
@@ -30,6 +31,7 @@ def add_products(name, price, condition, brand, categories, date_posted, comment
 	
 	# Insert new product into database
 	new_product = {
+		USER_ID: user_id,
 		PRODUCT_NAME: name, 
 		PRODUCT_PRICE: price,
 		PRODUCT_CONDITION: condition,

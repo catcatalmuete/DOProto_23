@@ -7,13 +7,15 @@ from flask import request, Flask
 from flask_restx import Resource, Api
 import data.users as usr
 import data.add_product as prods
+import data.get_product as get_prod
 
 app = Flask(__name__)
 api = Api(app)
 
 USERS = 'users'
 ADD_PRODUCT = 'add_product'
-
+GET_PRODUCT = "get_product"
+MAIN_MENU = ""
 
 @api.route('/hello')
 class HelloWorld(Resource):
@@ -81,15 +83,48 @@ class Users(Resource):
         """
         This method creates a new user.
         """
-        return usr.create_user()
+        data = request.get_json()
+        new_user = usr.create_user(
+            data['username'], 
+            data['user_id'], 
+            data['password'], 
+            data['shopping_cart']
+            )
+        
+        if new_user:
+            return {'message': 'User added successfully'}, 201
+        else:
+            return {'message': 'Failed to add user'}, 409
     
     def delete(self):
         """
         This method deletes a user.
         """
-        return usr.delete_user()
+        data = request.get_json()
+        if 'username' not in data or 'user_id' not in data:
+            return {'message': 'Username and user_id required for deleting a user'}, 400
+        filter = {'username': data['username'], 'user_id': data['user_id']}
+        deleted_user = usr.delete_user(filter, usr.USERS_COLLECT)
+        
+        if deleted_user:
+            return {'message': 'User deleted successfully'}, 200
+        else:
+            return {'message': 'Failed to delete user'}, 404
+
+
+@api.route(f'/{GET_PRODUCT}')
+class GetProduct(Resource):
+    """
+    This class supports fetching all products.
+    """
+    def get(self):
+        """
+        This method returns all products.
+        """
+        return get_prod.get_product(), 201
 
         
+    
     
 # for product listing
 @api.route(f'/{ADD_PRODUCT}')
@@ -101,7 +136,7 @@ class AddProduct(Resource):
         data = request.get_json()
         
 		# validation of product before adding
-        if 'name' not in data or 'price' not in data \
+        if 'user_id' not in data or 'name' not in data or 'price' not in data \
             or 'condition' not in data or 'brand' not in data \
                     or 'categories' not in data or 'date_posted' not in data \
                         or 'comments' not in data:
@@ -109,6 +144,7 @@ class AddProduct(Resource):
 
         # add the product
         new_product = prods.add_product(
+            data['user_id'],
             data['name'], 
             data['price'],
             data['condition'],
@@ -123,3 +159,6 @@ class AddProduct(Resource):
         else:
             return {'message': 'Failed to add product'}, 409
             
+
+    
+    

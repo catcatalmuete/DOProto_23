@@ -3,7 +3,9 @@ This module interfaces to our user data.
 """
 import data.db_connect as dbc
 USERNAME = "username"
+USER_ID = "user_id"
 PASSWORD = "password"
+SHOPPING_CART = []
 MIN_USER_NAME_LEN = 6
 MIN_PASSWORD_LEN = 8
 USERS_COLLECT = "users"
@@ -13,13 +15,24 @@ def get_users():
     dbc.connect_db()
     return dbc.fetch_all_as_dict(USERNAME, USERS_COLLECT)
 
-def create_user():
+def create_user(username, user_id, password, shopping_cart):
     dbc.connect_db()
-    return dbc.insert_one(USERS_COLLECT)
+    found_user = dbc.fetch_one({USERNAME: username}, USERS_COLLECT)
+    if found_user:
+        return False
+    
+	# Insert new user into the database
+    new_user = {
+		USERNAME: username,
+        USER_ID: user_id,
+        PASSWORD: password,
+        SHOPPING_CART: shopping_cart
+	}
+    return dbc.insert_one(new_user, USERS_COLLECT)
 
-def delete_user():
+def delete_user(user_filter, user_collection):
     dbc.connect_db()
-    return dbc.del_one(USERS_COLLECT)
+    return dbc.del_one(user_filter, user_collection)
 
 # def old_get_users():
 #     users = {
