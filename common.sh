@@ -1,1 +1,4 @@
-CONNECTION_STRING = "mongodb+srv://eileent7129:Eat2023@doproto.gdknfwd.mongodb.net/?retryWrites=true&w=majority"
+echo "Importing from common.sh"
+
+
+CONNECTION_STRING = ""
