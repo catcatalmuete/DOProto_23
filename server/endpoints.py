@@ -222,6 +222,12 @@ class ShoppingCart(Resource):
         This method deletes a product from user shopping cart.
         """
         return usr.delete_shopping_cart()
+    
+    def calc_checkout_price(self):
+        """
+        This method calculates total price of all products in user shopping cart.
+        """
+        return usr.calc_checkout_price()
 
 @api.route(f'/{FOLLOWERS}')
 class Followers(Resource):
