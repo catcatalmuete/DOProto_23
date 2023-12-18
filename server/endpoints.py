@@ -8,7 +8,7 @@ from flask_restx import Resource, Api
 import data.users as usr
 import data.add_product as prods
 import data.get_product as get_prod
-# import data.add_followers as add_follower
+import data.add_followers as add_follower
 import data.get_followers as get_follower
 
 app = Flask(__name__)
@@ -222,6 +222,12 @@ class ShoppingCart(Resource):
         This method deletes a product from user shopping cart.
         """
         return usr.delete_shopping_cart()
+    
+    def calc_checkout_price(self):
+        """
+        This method calculates total price of all products in user shopping cart.
+        """
+        return usr.calc_checkout_price()
 
 @api.route(f'/{FOLLOWERS}')
 class Followers(Resource):

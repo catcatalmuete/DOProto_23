@@ -47,6 +47,14 @@ def delete_shopping_cart():
     dbc.connect_db()
     return dbc.del_one(SHOPPING_CART, USERS_COLLECT) # delete a product from user shopping cart
 
+def calc_checkout_price():
+    dbc.connect_db()
+    return dbc.fetch_all_as_dict(SHOPPING_CART, USERS_COLLECT)
+    total_price = 0
+    for product in SHOPPING_CART:
+        total_price += product.price
+    return total_price  # calculate total price of all products in user shopping cart
+
 # def old_get_users():
 #     users = {
         
