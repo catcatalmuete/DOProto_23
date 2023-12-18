@@ -18,6 +18,7 @@ USERS = 'users'
 ADD_PRODUCT = 'add_product'
 UPDATE_PRODUCT = 'update_product'
 SHOPPING_CART = 'shopping_cart'
+SAVED = 'saved'
 GET_PRODUCT = "get_product"
 FOLLOWERS = 'followers'
 ADD_FOLLOWERS = 'add_followers'
@@ -95,7 +96,8 @@ class Users(Resource):
             data['username'], 
             data['user_id'], 
             data['password'], 
-            data['shopping_cart']
+            data['shopping_cart'],
+            data['saved']
             )
         
         if new_user:
@@ -240,3 +242,27 @@ class Followers(Resource):
         """
         return usr.get_followers(), 201
 
+# Use get_shopping_cart() from users.py to show all products in user shopping cart
+@api.route(f'/{SAVED}')
+class Saved(Resource):
+    """
+    This class supports fetching user's shopping cart.
+    """
+    def get(self):
+        """
+        This method returns all products shopping cart.
+        """
+        return usr.get_saved(), 201
+
+    def add(self):
+        """
+        This method adds a product to user shopping cart.
+        """
+        return usr.add_saved()
+    
+    def delete(self):
+        """
+        This method deletes a product from user shopping cart.
+        """
+        return usr.delete_saved()
+    
