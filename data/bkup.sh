@@ -9,7 +9,6 @@ for collection in ${Collections[@]}; do
 done
 
 git add $BKUP_DIR/*.json
-git add $BKUP_DIR/*.json
 git commit $BKUP_DIR/*.json -m "Mongo DB backup"
 git pull origin master
 git push origin master

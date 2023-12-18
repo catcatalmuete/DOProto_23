@@ -8,7 +8,7 @@ from flask_restx import Resource, Api
 import data.users as usr
 import data.add_product as prods
 import data.get_product as get_prod
-import data.add_followers as add_follower
+# import data.add_followers as add_follower
 import data.get_followers as get_follower
 
 app = Flask(__name__)
