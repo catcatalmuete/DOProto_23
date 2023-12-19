@@ -63,7 +63,7 @@ class MainMenu(Resource):
         """
         Gets the main game menu.
         """
-        return {'Title': MAIN_MENU_NM,
+        return {'Title': MAIN_MENU,
                 'Default': 2,
                 'Choices': {
                     '1': {'url': '/', 'method': 'get',
