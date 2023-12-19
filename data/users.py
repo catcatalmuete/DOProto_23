@@ -24,6 +24,8 @@ def create_user(username, user_id, password, shopping_cart, saved):
     if found_user:
         return False
     
+	
+    
 	# Insert new user into the database
     new_user = {
 		USERNAME: username,
