@@ -2,27 +2,23 @@
 This is the file containing all of the endpoints for our flask app.
 The endpoint called `endpoints` will return all available endpoints.
 """
+from http import HTTPStatus
 
-from flask import request, Flask, jsonify
-from flask_restx import Resource, Api
+from flask import request, Flask
+from flask_restx import Resource, Api, fields
+import werkzeug.exceptions as wz
 import data.users as usr
 import data.add_product as prods
 import data.get_product as get_prod
 import data.add_followers as add_follower
 import data.get_followers as get_follower
 
-# import requests
-# import json
-
-url = "http://127.0.0.1:8000//add_product"  # Replace with your actual API endpoint
-
-headers = {"Content-Type": "application/json"}
-
 
 app = Flask(__name__)
 api = Api(app)
 
 USERS = 'users'
+USER_ID = "User ID"
 ADD_PRODUCT = 'add_product'
 UPDATE_PRODUCT = 'update_product'
 SHOPPING_CART = 'shopping_cart'
@@ -83,6 +79,11 @@ class MainMenu(Resource):
                     'X': {'text': 'Exit'},
                 }}
 
+user_fields = api.model('NewUser', {
+    usr.USERNAME: fields.String,
+    usr.USER_ID: fields.String,
+    usr.PASSWORD: fields.String
+})
 
 @api.route(f'/{USERS}')
 class Users(Resource):
@@ -93,27 +94,43 @@ class Users(Resource):
         """
         This method returns all users.
         """
-        return usr.get_users(), 201
+        print("this is user data: ", usr.get_users())
+        return usr.get_users()
     
+    @api.expect(user_fields)
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
     def post(self):
         """
-        This method creates a new user.
+        Add a new user.
         """
-        data = request.get_json()
-        username = data.get('username')
-        user_id = data.get('user_id')
-        password = data.get('password')
-        shopping_cart = data.get('shopping_cart', [])
-        saved = data.get('saved', [])
-
-        new_user = usr.create_user(
-            username, user_id, password, shopping_cart, saved
-            )
+        # if request.headers['Content-Type'] != 'application/json':
+        #     return jsonify({'error': 'needs to be application/json'}), 415
         
-        if new_user:
-            return jsonify({'message': 'User added successfully'}), 201
-        else:
-            return jsonify({'message': 'Failed to add user'}), 409
+        username = request.json[usr.USERNAME]
+        user_id = request.json[usr.USER_ID]
+        password = request.json[usr.PASSWORD]
+        # shopping_cart = request.json[usr.SHOPPING_CART]
+        # saved = request.json[usr.SAVED]
+        try:
+            new_user = usr.create_user(username, user_id, password)
+            if new_user is None:
+                raise wz.ServiceUnavailable('There is a technical issue.')
+            return {USER_ID: new_user}
+        except ValueError as e:
+            raise wz.NotAcceptable(f'{str(e)}')
+            
+    
+        # print("this is user data: ", data)
+
+        # new_user = usr.create_user(
+        #     username, user_id, password, shopping_cart, saved
+        #     )
+        
+        # if new_user:
+        #     return jsonify({'message': 'User added successfully'}), 201
+        # else:
+        #     return jsonify({'message': 'Failed to add user'}), 409
     
     def delete(self):
         """

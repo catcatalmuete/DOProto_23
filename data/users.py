@@ -14,27 +14,35 @@ SHOPPING_CART = ["shopping_cart"] # list of products in user shopping cart
 SAVED = ["saved"] # list of products saved by user
 
 
-def get_users():
+def get_users() -> dict:
     dbc.connect_db()
     return dbc.fetch_all_as_dict(USERNAME, USERS_COLLECT)
 
-def create_user(username, user_id, password, shopping_cart, saved):
+def create_user(username : str, user_id : str, password : str):
     dbc.connect_db()
-    found_user = dbc.fetch_one({USERNAME: username}, USERS_COLLECT)
+    found_user = dbc.fetch_one(USERS_COLLECT,{USERNAME: username},)
     if found_user:
-        return False
+        raise ValueError(f'Duplicate username: {username=}')
+    new_user = {}
+    new_user[USERNAME] = username
+    new_user[USER_ID] = user_id
+    new_user[PASSWORD] = password
+    _id = dbc.insert_one(USERS_COLLECT, new_user)
+    return _id is not None
     
-	
+
     
-	# Insert new user into the database
-    new_user = {
-		USERNAME: username,
-        USER_ID: user_id,
-        PASSWORD: password,
-        SHOPPING_CART: shopping_cart,
-        SAVED: saved
-	}
-    return dbc.insert_one(new_user, USERS_COLLECT)
+	# def create_user(username : str, user_id : str, password : str, shopping_cart : list, saved : list):
+    
+	# # Insert new user into the database
+    # new_user = {
+	# 	USERNAME: username,
+    #     USER_ID: user_id,
+    #     PASSWORD: password,
+    #     SHOPPING_CART: shopping_cart,
+    #     SAVED: saved
+	# }
+    # return dbc.insert_one(new_user, "users")
 
 def delete_user(user_filter, user_collection):
     dbc.connect_db()
@@ -42,19 +50,19 @@ def delete_user(user_filter, user_collection):
 
 def get_shopping_cart():
     dbc.connect_db()
-    return dbc.fetch_all_as_dict(SHOPPING_CART, USERS_COLLECT) # return all products in user shopping cart
+    return dbc.fetch_all_as_dict(SHOPPING_CART, "users") # return all products in user shopping cart
 
 def add_shopping_cart():
     dbc.connect_db()
-    return dbc.insert_one(SHOPPING_CART, USERS_COLLECT) # add a product to user shopping cart 
+    return dbc.insert_one(SHOPPING_CART, "users") # add a product to user shopping cart 
 
 def delete_shopping_cart():
     dbc.connect_db()
-    return dbc.del_one(SHOPPING_CART, USERS_COLLECT) # delete a product from user shopping cart
+    return dbc.del_one(SHOPPING_CART, "users") # delete a product from user shopping cart
 
 def calc_checkout_price():
     dbc.connect_db()
-    return dbc.fetch_all_as_dict(SHOPPING_CART, USERS_COLLECT)
+    return dbc.fetch_all_as_dict(SHOPPING_CART, "users")
     total_price = 0
     for product in SHOPPING_CART:
         total_price += product.price
@@ -62,15 +70,15 @@ def calc_checkout_price():
 
 def get_saved():
     dbc.connect_db()
-    return dbc.fetch_all_as_dict(SAVED, USERS_COLLECT) # return all products in user saved list
+    return dbc.fetch_all_as_dict(SAVED, "users") # return all products in user saved list
 
 def add_saved():
     dbc.connect_db()
-    return dbc.insert_one(SAVED, USERS_COLLECT) # Saved a product to user saved list
+    return dbc.insert_one(SAVED, "users") # Saved a product to user saved list
 
 def delete_saved():
     dbc.connect_db()
-    return dbc.del_one(SAVED, USERS_COLLECT) # delete a product from user saved list
+    return dbc.del_one(SAVED, "users") # delete a product from user saved list
 
 
 # def old_get_users():
