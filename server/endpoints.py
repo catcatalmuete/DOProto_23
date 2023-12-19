@@ -18,7 +18,8 @@ app = Flask(__name__)
 api = Api(app)
 
 USERS = 'users'
-USER_ID = "User ID"
+DELETE = 'delete'
+DEL_USER = f'{USERS}/{DELETE}'
 ADD_PRODUCT = 'add_product'
 UPDATE_PRODUCT = 'update_product'
 SHOPPING_CART = 'shopping_cart'
@@ -28,6 +29,7 @@ FOLLOWERS = 'followers'
 ADD_FOLLOWERS = 'add_followers'
 GET_FOLLOWERS = 'get_followers'
 MAIN_MENU = ""
+USER_ID = "User ID"
 
 @api.route('/hello')
 class HelloWorld(Resource):
@@ -85,6 +87,24 @@ user_fields = api.model('NewUser', {
     usr.PASSWORD: fields.String
 })
 
+@api.route(f'/{DEL_USER}/<username>')
+class DelUser(Resource):
+    """
+    Deletes a user by username.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
+    def delete(self, username):
+        """
+        Deletes a user by username.
+        """
+        try:
+            usr.delete_user(username)
+            return {username: 'Deleted'}
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
+        
+
 @api.route(f'/{USERS}')
 class Users(Resource):
     """
@@ -132,20 +152,7 @@ class Users(Resource):
         # else:
         #     return jsonify({'message': 'Failed to add user'}), 409
     
-    def delete(self):
-        """
-        This method deletes a user.
-        """
-        data = request.get_json()
-        if 'username' not in data or 'user_id' not in data:
-            return {'message': 'Username and user_id required for deleting a user'}, 400
-        filter = {'username': data['username'], 'user_id': data['user_id']}
-        deleted_user = usr.delete_user(filter, usr.USERS_COLLECT)
-        
-        if deleted_user:
-            return {'message': 'User deleted successfully'}, 200
-        else:
-            return {'message': 'Failed to delete user'}, 404
+    
 
 
 @api.route(f'/{GET_PRODUCT}')

@@ -29,7 +29,6 @@ def create_user(username : str, user_id : str, password : str):
     new_user[PASSWORD] = password
     _id = dbc.insert_one(USERS_COLLECT, new_user)
     return _id is not None
-    
 
     
 	# def create_user(username : str, user_id : str, password : str, shopping_cart : list, saved : list):
@@ -44,9 +43,9 @@ def create_user(username : str, user_id : str, password : str):
 	# }
     # return dbc.insert_one(new_user, "users")
 
-def delete_user(user_filter, user_collection):
+def delete_user(username: str):
     dbc.connect_db()
-    return dbc.del_one(user_filter, user_collection)
+    return dbc.del_one(USERS_COLLECT, {USERNAME: username})
 
 def get_shopping_cart():
     dbc.connect_db()
