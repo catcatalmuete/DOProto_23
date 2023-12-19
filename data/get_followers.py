@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-import data.db_connect as dbc
-
-FOLLOWERS_COLLECT = "followers"
-USER_ID = "username"
-
-def get_product():
-	dbc.connect_db()
-	return dbc.fetch_all_as_dict(USER_ID, FOLLOWERS_COLLECT)
-
-=======
 import data.db_connect as dbc
 
 FOLLOWERS_COLLECT = "followers"
@@ -26,4 +15,3 @@ def get_followers():
 		print(f"Error: {e}")
 
 
->>>>>>> b35da24f6d16b09b16d063d3c9096817f306f496

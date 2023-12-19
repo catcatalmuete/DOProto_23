@@ -238,5 +238,5 @@ class Followers(Resource):
         """
         This method returns all followers.
         """
-        return usr.get_followers(), 201
+        return get_follower.get_followers(), 201
 
