@@ -291,11 +291,10 @@ class Saved(Resource):
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
         
-    def add(self, username):
+    def post(self, username):
         """
         This method adds a product to user saved list.
         """
-        return usr.add_saved()
         new_prod_name = "new prod"
         return usr.add_saved(username, new_prod_name)
 
