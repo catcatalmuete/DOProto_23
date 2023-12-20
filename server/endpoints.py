@@ -30,6 +30,7 @@ ADD_FOLLOWERS = 'add_followers'
 GET_FOLLOWERS = 'get_followers'
 MAIN_MENU = ""
 USER_ID = "User ID"
+PRODUCT_ID = "Product ID"
 
 @api.route('/hello')
 class HelloWorld(Resource):
@@ -139,22 +140,18 @@ class Users(Resource):
             return {USER_ID: new_user}
         except ValueError as e:
             raise wz.NotAcceptable(f'{str(e)}')
-            
-    
-        # print("this is user data: ", data)
-
-        # new_user = usr.create_user(
-        #     username, user_id, password, shopping_cart, saved
-        #     )
-        
-        # if new_user:
-        #     return jsonify({'message': 'User added successfully'}), 201
-        # else:
-        #     return jsonify({'message': 'Failed to add user'}), 409
-    
-    
 
 
+product_fields = api.model('NewProduct', {
+    prods.USER_ID: fields.String,
+    prods.PRODUCT_NAME: fields.String,
+    prods.PRODUCT_PRICE: fields.Float,
+    prods.PRODUCT_CONDITION: fields.String,
+    prods.PRODUCT_BRAND: fields.String,
+    prods.PRODUCT_CATEGORIES: fields.String,
+    prods.PRODUCT_DATE_POSTED: fields.String,
+    prods.PRODUCT_COMMENTS: fields.String,
+})
 @api.route(f'/{GET_PRODUCT}')
 class GetProduct(Resource):
     """
@@ -165,9 +162,6 @@ class GetProduct(Resource):
         This method returns all products.
         """
         return get_prod.get_product(), 201
-
-        
-    
     
 # for product listing
 @api.route(f'/{ADD_PRODUCT}')
@@ -175,41 +169,29 @@ class AddProduct(Resource):
     """
     This class supports users adding their own product on app
     """
+    @api.expect(product_fields)
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
     def post(self):
-         """
+        """
         This method adds a product
         """
-         print("Working")
-         data = request.get_json()
-		# validation of product before adding
-         if 'user_id' not in data or 'name' not in data or 'price' not in data \
-            or 'condition' not in data or 'brand' not in data \
-                    or 'categories' not in data or 'date_posted' not in data \
-                        or 'comments' not in data:
-            return {'message': 'All fields required for adding product'}
-        # print("Received data:", data) 
-        # new_product = prods.add_products(
-        #     data['user_id'],
-        #     data['name'], 
-        #     data['price'],
-        #     data['condition'],
-        #     data['brand'],
-        #     data['categories'],
-        #     data['date_posted'],
-        #     data['comments'],
-		# )
-        # print("New product:", new_product)
-         return prods.add_products(
-            data['user_id'],
-            data['name'], 
-            data['price'],
-            data['condition'],
-            data['brand'],
-            data['categories'],
-            data['date_posted'],
-            data['comments'],
-		)
+        user_id = request.json[prods.USER_ID]
+        name = request.json[prods.PRODUCT_NAME]
+        price = request.json[prods.PRODUCT_PRICE]
+        condition = request.json[prods.PRODUCT_CONDITION]
+        brand = request.json[prods.PRODUCT_BRAND]
+        categories = request.json[prods.PRODUCT_CATEGORIES]
+        date_posted = request.json[prods.PRODUCT_DATE_POSTED]
+        comments = request.json[prods.PRODUCT_COMMENTS]
         
+        try:
+            new_product = prods.add_product(user_id, name, price, condition, brand, categories, date_posted, comments)
+            if new_product is None:
+                raise wz.ServiceUnavailable('There is a technical issue.')
+            return {PRODUCT_ID: new_product}
+        except ValueError as e:
+            raise wz.NotAcceptable(f'{str(e)}')
         # if new_product:
         #     return {'message': 'Product added successfully'}, 201
         # else:

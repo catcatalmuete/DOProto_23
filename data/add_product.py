@@ -7,7 +7,7 @@ PRODUCT_PRICE = "price"
 PRODUCT_CONDITION = "condition"
 PRODUCT_BRAND = "brand"
 PRODUCT_CATEGORIES = "categories"
-PRODUCT_DATE_POSTED = "date_posted"
+PRODUCT_DATE_POSTED = "date posted"
 PRODUCT_COMMENTS = "comments"
 
 """
@@ -21,24 +21,22 @@ Params:
  - comments (str) : comments from the seller
 """
 
-def add_products(user_id, name, price, condition, brand, categories, date_posted, comments):
+def add_product(user_id : str, name : str, price : int, condition : str, 
+				brand : str, categories : str, date_posted : str, comments: str):
 	dbc.connect_db()
 
 	# check if product already exists
-	found_product = dbc.fetch_one({PRODUCT_NAME: name}, PRODUCTS_COLLECT)
+	found_product = dbc.fetch_one(PRODUCTS_COLLECT, {PRODUCT_NAME: name})
 	if found_product:
-		return False
-	
-	# Insert new product into database
-	new_product = {
-		USER_ID: user_id,
-		PRODUCT_NAME: name, 
-		PRODUCT_PRICE: price,
-		PRODUCT_CONDITION: condition,
-		PRODUCT_BRAND: brand, 
-		PRODUCT_CATEGORIES: categories,
-		PRODUCT_DATE_POSTED: date_posted,
-		PRODUCT_COMMENTS: comments
-		}
-	dbc.insert_one(new_product, PRODUCTS_COLLECT)
-	return True
+		raise ValueError(f'Duplicate product name: {name=}')
+	new_prod = {}
+	new_prod[USER_ID] = user_id
+	new_prod[PRODUCT_NAME] = name
+	new_prod[PRODUCT_PRICE] = price
+	new_prod[PRODUCT_CONDITION] = condition
+	new_prod[PRODUCT_BRAND] = brand
+	new_prod[PRODUCT_CATEGORIES] = categories
+	new_prod[PRODUCT_DATE_POSTED] = date_posted
+	new_prod[PRODUCT_COMMENTS] = comments
+	_id = dbc.insert_one(PRODUCTS_COLLECT, new_prod)
+	return _id is not None
