@@ -73,10 +73,16 @@ def get_saved(username: str):
         saved = user.get(SAVED, "")
         return saved
     
-def add_saved():
+def add_saved(username: str, prod_name : str):
     dbc.connect_db()
-    return dbc.insert_one(SAVED, "users") # Saved a product to user saved list
-
+    user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
+    if user:
+        saved = user.get(SAVED, "")
+        saved_list = saved.split(',') if saved else []
+        saved_list.append(prod_name)
+        updated_saved = ','.join(map(str, saved_list))
+        return dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SAVED: updated_saved}})
+       
 def delete_saved():
     dbc.connect_db()
     return dbc.del_one(SAVED, "users") # delete a product from user saved list

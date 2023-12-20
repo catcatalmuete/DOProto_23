@@ -290,14 +290,17 @@ class Saved(Resource):
             return usr.get_saved(username)
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
-
-    def add(self):
+        
+    def add(self, username):
         """
-        This method adds a product to user shopping cart.
+        This method adds a product to user saved list.
         """
         return usr.add_saved()
+        new_prod_name = "new prod"
+        return usr.add_saved(username, new_prod_name)
+
     
-    def delete(self):
+    def delete(self, username):
         """
         This method deletes a product from user shopping cart.
         """
