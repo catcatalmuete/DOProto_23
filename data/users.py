@@ -66,10 +66,13 @@ def calc_checkout_price():
         total_price += product.price
     return total_price  # calculate total price of all products in user shopping cart
 
-def get_saved():
+def get_saved(username: str):
     dbc.connect_db()
-    return dbc.fetch_all_as_dict(SAVED, "users") # return all products in user saved list
-
+    user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
+    if user:
+        saved = user.get(SAVED, "")
+        return saved
+    
 def add_saved():
     dbc.connect_db()
     return dbc.insert_one(SAVED, "users") # Saved a product to user saved list

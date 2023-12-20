@@ -277,16 +277,19 @@ class Followers(Resource):
         return get_follower.get_followers(), 201
 
 # Use get_shopping_cart() from users.py to show all products in user shopping cart
-@api.route(f'/{SAVED}')
+@api.route(f'/{SAVED}/<username>')
 class Saved(Resource):
     """
     This class supports fetching user's shopping cart.
     """
-    def get(self):
+    def get(self, username):
         """
         This method returns all products shopping cart.
         """
-        return usr.get_saved(), 201
+        try:
+            return usr.get_saved(username)
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
 
     def add(self):
         """
