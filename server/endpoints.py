@@ -246,23 +246,24 @@ class ShoppingCart(Resource):
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
 
-    def post(self):
+    def post(self, username):
         """
         This method adds a product to user shopping cart.
         """
-        return usr.add_shopping_cart()
+        new_prod_name = "new prod"
+        return usr.add_shopping_cart(username, new_prod_name)
     
-    def delete(self):
+    def delete(self, username):
         """
         This method deletes a product from user shopping cart.
         """
         return usr.delete_shopping_cart()
     
-    def calc_checkout_price(self):
-        """
-        This method calculates total price of all products in user shopping cart.
-        """
-        return usr.calc_checkout_price()
+    # def calc_checkout_price(self):
+    #     """
+    #     This method calculates total price of all products in user shopping cart.
+    #     """
+    #     return usr.calc_checkout_price()
 
 @api.route(f'/{FOLLOWERS}')
 class Followers(Resource):

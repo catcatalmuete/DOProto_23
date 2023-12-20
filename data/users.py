@@ -2,6 +2,8 @@
 This module interfaces to our user data.
 """
 import data.db_connect as dbc
+import data.add_product as add_prod
+
 USERNAME = "username"
 USER_ID = "user_id"
 PASSWORD = "password"
@@ -18,7 +20,7 @@ def get_users() -> dict:
 
 def create_user(username : str, user_id : str, password : str, shopping_cart : str, saved : str):
     dbc.connect_db()
-    found_user = dbc.fetch_one(USERS_COLLECT,{USERNAME: username},)
+    found_user = dbc.fetch_one(USERS_COLLECT,{USERNAME: username})
     if found_user:
         raise ValueError(f'Duplicate username: {username=}')
     new_user = {}
@@ -41,9 +43,16 @@ def get_shopping_cart(username: str):
         shopping_cart = user.get(SHOPPING_CART, "")
         return shopping_cart
  
-def add_shopping_cart():
+def add_shopping_cart(username: str, prod_name : str):
     dbc.connect_db()
-    return dbc.insert_one(SHOPPING_CART, "users") # add a product to user shopping cart 
+    user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
+    if user:
+        shopping_cart = user.get(SHOPPING_CART, "")
+        shopping_cart_list = shopping_cart.split(',') if shopping_cart else []
+        shopping_cart_list.append(prod_name)
+        updated_shopping_cart = ','.join(map(str, shopping_cart_list))
+        return dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SHOPPING_CART: updated_shopping_cart}})
+       
 
 def delete_shopping_cart():
     dbc.connect_db()
