@@ -5,20 +5,18 @@ import data.db_connect as dbc
 USERNAME = "username"
 USER_ID = "user_id"
 PASSWORD = "password"
-SHOPPING_CART = []
-SAVED = []
+SHOPPING_CART = "shopping_cart" # meant to be a list, but will be saved as a string with commas
+SAVED = "saved" # meant to be a list, but will be saved as a string with commas
 MIN_USER_NAME_LEN = 6
 MIN_PASSWORD_LEN = 8
 USERS_COLLECT = "users"
-SHOPPING_CART = ["shopping_cart"] # list of products in user shopping cart
-SAVED = ["saved"] # list of products saved by user
 
 
 def get_users() -> dict:
     dbc.connect_db()
     return dbc.fetch_all_as_dict(USERNAME, USERS_COLLECT)
 
-def create_user(username : str, user_id : str, password : str):
+def create_user(username : str, user_id : str, password : str, shopping_cart : str, saved : str):
     dbc.connect_db()
     found_user = dbc.fetch_one(USERS_COLLECT,{USERNAME: username},)
     if found_user:
@@ -27,30 +25,22 @@ def create_user(username : str, user_id : str, password : str):
     new_user[USERNAME] = username
     new_user[USER_ID] = user_id
     new_user[PASSWORD] = password
+    new_user[SHOPPING_CART] = shopping_cart
+    new_user[SAVED] = saved
     _id = dbc.insert_one(USERS_COLLECT, new_user)
     return _id is not None
-
-    
-	# def create_user(username : str, user_id : str, password : str, shopping_cart : list, saved : list):
-    
-	# # Insert new user into the database
-    # new_user = {
-	# 	USERNAME: username,
-    #     USER_ID: user_id,
-    #     PASSWORD: password,
-    #     SHOPPING_CART: shopping_cart,
-    #     SAVED: saved
-	# }
-    # return dbc.insert_one(new_user, "users")
 
 def delete_user(username: str):
     dbc.connect_db()
     return dbc.del_one(USERS_COLLECT, {USERNAME: username})
 
-def get_shopping_cart():
+def get_shopping_cart(username: str):
     dbc.connect_db()
-    return dbc.fetch_all_as_dict(SHOPPING_CART, "users") # return all products in user shopping cart
-
+    user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
+    if user:
+        shopping_cart = user.get(SHOPPING_CART, "")
+        return shopping_cart
+ 
 def add_shopping_cart():
     dbc.connect_db()
     return dbc.insert_one(SHOPPING_CART, "users") # add a product to user shopping cart 

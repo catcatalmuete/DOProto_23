@@ -85,7 +85,9 @@ class MainMenu(Resource):
 user_fields = api.model('NewUser', {
     usr.USERNAME: fields.String,
     usr.USER_ID: fields.String,
-    usr.PASSWORD: fields.String
+    usr.PASSWORD: fields.String,
+    usr.SHOPPING_CART: fields.String,
+    usr.SAVED: fields.String
 })
 
 @api.route(f'/{DEL_USER}/<username>')
@@ -131,10 +133,10 @@ class Users(Resource):
         username = request.json[usr.USERNAME]
         user_id = request.json[usr.USER_ID]
         password = request.json[usr.PASSWORD]
-        # shopping_cart = request.json[usr.SHOPPING_CART]
-        # saved = request.json[usr.SAVED]
+        shopping_cart = request.json[usr.SHOPPING_CART]
+        saved = request.json[usr.SAVED]
         try:
-            new_user = usr.create_user(username, user_id, password)
+            new_user = usr.create_user(username, user_id, password, shopping_cart, saved)
             if new_user is None:
                 raise wz.ServiceUnavailable('There is a technical issue.')
             return {USER_ID: new_user}
@@ -230,16 +232,19 @@ class UpdateProduct(Resource):
          return updated_product
         
 # Use get_shopping_cart() from users.py to show all products in user shopping cart
-@api.route(f'/{SHOPPING_CART}')
+@api.route(f'/{SHOPPING_CART}/<username>')
 class ShoppingCart(Resource):
     """
     This class supports fetching user's shopping cart.
     """
-    def get(self):
+    def get(self, username):
         """
         This method returns all products shopping cart.
         """
-        return usr.get_shopping_cart(), 201
+        try:
+            return usr.get_shopping_cart(username)
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
 
     def post(self):
         """
