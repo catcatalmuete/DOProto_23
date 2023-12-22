@@ -10,6 +10,7 @@ import werkzeug.exceptions as wz
 import data.users as usr
 import data.add_product as prods
 import data.get_product as get_prod
+import data.delete_product as del_prod
 import data.add_followers as add_follower
 import data.get_followers as get_follower
 
@@ -21,6 +22,7 @@ USERS = 'users'
 DELETE = 'delete'
 DEL_USER = f'{USERS}/{DELETE}'
 ADD_PRODUCT = 'add_product'
+DELETE_PRODUCT = 'delete_product'
 UPDATE_PRODUCT = 'update_product'
 SHOPPING_CART = 'shopping_cart'
 SAVED = 'saved'
@@ -32,55 +34,55 @@ MAIN_MENU = ""
 USER_ID = "User ID"
 PRODUCT_ID = "Product ID"
 
-@api.route('/hello')
-class HelloWorld(Resource):
-    """
-    The purpose of the HelloWorld class is to have a simple test to see if the
-    app is working at all.
-    """
-    def get(self):
-        """
-        A trivial endpoint to see if the server is running.
-        It just answers with "hello world."
-        """
-        return {'hello': 'world'}
+# @api.route('/hello')
+# class HelloWorld(Resource):
+#     """
+#     The purpose of the HelloWorld class is to have a simple test to see if the
+#     app is working at all.
+#     """
+#     def get(self):
+#         """
+#         A trivial endpoint to see if the server is running.
+#         It just answers with "hello world."
+#         """
+#         return {'hello': 'world'}
 
 
-@api.route('/endpoints')
-class Endpoints(Resource):
-    """
-    This class will serve as live, fetchable documentation of what endpoints
-    are available in the system.
-    """
-    def get(self):
-        """
-        The `get()` method will return a list of available endpoints.
-        """
-        endpoints = sorted(rule.rule for rule in api.app.url_map.iter_rules())
-        return {"Available endpoints": endpoints}
+# @api.route('/endpoints')
+# class Endpoints(Resource):
+#     """
+#     This class will serve as live, fetchable documentation of what endpoints
+#     are available in the system.
+#     """
+#     def get(self):
+#         """
+#         The `get()` method will return a list of available endpoints.
+#         """
+#         endpoints = sorted(rule.rule for rule in api.app.url_map.iter_rules())
+#         return {"Available endpoints": endpoints}
 
 
-@api.route(f'/{MAIN_MENU}')
-@api.route('/')
-class MainMenu(Resource):
-    """
-    This will deliver our main menu.
-    """
-    def get(self):
-        """
-        Gets the main game menu.
-        """
-        return {'Title': MAIN_MENU,
-                'Default': 2,
-                'Choices': {
-                    '1': {'url': '/', 'method': 'get',
-                          'text': 'List Available Characters'},
-                    '2': {'url': '/',
-                          'method': 'get', 'text': 'List Active Games'},
-                    '3': {'url': f'/{USERS}',
-                          'method': 'get', 'text': 'List Users'},
-                    'X': {'text': 'Exit'},
-                }}
+# @api.route(f'/{MAIN_MENU}')
+# @api.route('/')
+# class MainMenu(Resource):
+#     """
+#     This will deliver our main menu.
+#     """
+#     def get(self):
+#         """
+#         Gets the main game menu.
+#         """
+#         return {'Title': MAIN_MENU,
+#                 'Default': 2,
+#                 'Choices': {
+#                     '1': {'url': '/', 'method': 'get',
+#                           'text': 'List Available Characters'},
+#                     '2': {'url': '/',
+#                           'method': 'get', 'text': 'List Active Games'},
+#                     '3': {'url': f'/{USERS}',
+#                           'method': 'get', 'text': 'List Users'},
+#                     'X': {'text': 'Exit'},
+#                 }}
 
 user_fields = api.model('NewUser', {
     usr.USERNAME: fields.String,
@@ -198,7 +200,25 @@ class AddProduct(Resource):
         #     return {'message': 'Product added successfully'}, 201
         # else:
         #     return {'message': 'Failed to add product'}, 409
-        
+
+# for deleting a product based on product name
+@api.route(f'/{DELETE_PRODUCT}/<prod_name>')
+class DeleteProduct(Resource):
+    """
+    Deletes a product by product name.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
+    def delete(self, prod_name):
+        """
+        Deletes a product by product name.
+        """
+        try:
+            del_prod.delete_product(prod_name)
+            return {prod_name: 'Deleted'}
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
+    
 
 # Updating product information
 @api.route(f'/{UPDATE_PRODUCT}')
