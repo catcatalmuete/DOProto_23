@@ -54,9 +54,19 @@ def add_shopping_cart(username: str, prod_name : str):
         return dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SHOPPING_CART: updated_shopping_cart}})
        
 
-def delete_shopping_cart():
+def delete_shopping_cart(username: str, del_prod : str):
     dbc.connect_db()
-    return dbc.del_one(SHOPPING_CART, "users") # delete a product from user shopping cart
+    user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
+    if user:
+        shopping_cart = user.get(SHOPPING_CART, "")
+        shopping_cart_list = shopping_cart.split(',') if shopping_cart else []
+        try:
+            shopping_cart_list.remove(del_prod)
+        except ValueError:
+            pass
+        
+        updated_shopping_cart = ','.join(map(str, shopping_cart_list))
+        return dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SHOPPING_CART: updated_shopping_cart}})
 
 def calc_checkout_price():
     dbc.connect_db()
@@ -83,9 +93,19 @@ def add_saved(username: str, prod_name : str):
         updated_saved = ','.join(map(str, saved_list))
         return dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SAVED: updated_saved}})
        
-def delete_saved():
+def delete_saved(username : str, del_prod : str):
     dbc.connect_db()
-    return dbc.del_one(SAVED, "users") # delete a product from user saved list
+    user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
+    if user:
+        saved = user.get(SAVED, "")
+        saved_list = saved.split(',') if saved else []
+        try:
+            saved_list.remove(del_prod)
+        except ValueError:
+            pass
+        
+        updated_saved = ','.join(map(str, saved_list))
+        return dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SAVED: updated_saved}})
 
 
 # def old_get_users():

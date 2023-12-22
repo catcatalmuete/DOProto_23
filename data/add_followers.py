@@ -1,22 +1,43 @@
 import data.db_connect as dbc
 
 FOLLOWERS_COLLECT = "followers"
-USER_ID = "username"
+USERNAME = "username"
 FOLLOWERS = 'following'
 
 
-def add_followers(user, follower):
+def new_add_followers(user, followers):
 	dbc.connect_db()
 
 	# check if follower is duplicate
-	check = dbc.fetch_one({USER_ID: follower}, FOLLOWERS_COLLECT)
-	if check:
-		return False
+	found_user = dbc.fetch_one(FOLLOWERS_COLLECT,  {USERNAME: user})
+	if found_user:
+		raise ValueError(f'User not found: {user=}')
 	
 	# Insert new follower into database
 	new_follower = {
-		USER_ID: user,
-		FOLLOWERS: follower
+		USERNAME: user,
+		FOLLOWERS: followers
 		}
-	dbc.insert_one(new_follower, FOLLOWERS_COLLECT)
-	return True
+	
+	_id = dbc.insert_one(FOLLOWERS_COLLECT, new_follower)
+	return _id is not None
+	
+
+
+def add_followers(user, followers):
+	dbc.connect_db()
+
+	# check if follower is duplicate
+	found_user = dbc.fetch_one(FOLLOWERS_COLLECT,  {USERNAME: user})
+	if found_user:
+		raise ValueError(f'User not found: {user=}')
+	
+	# Insert new follower into database
+	new_follower = {
+		USERNAME: user,
+		FOLLOWERS: followers
+		}
+	
+	_id = dbc.insert_one(FOLLOWERS_COLLECT, new_follower)
+	return _id is not None
+	

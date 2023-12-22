@@ -25,7 +25,9 @@ ADD_PRODUCT = 'add_product'
 DELETE_PRODUCT = 'delete_product'
 UPDATE_PRODUCT = 'update_product'
 SHOPPING_CART = 'shopping_cart'
+DELETE_SHOPPING_CART = 'delete_shopping_cart'
 SAVED = 'saved'
+DELETE_SAVED = 'delete_saved'
 GET_PRODUCT = "get_product"
 FOLLOWERS = 'followers'
 ADD_FOLLOWERS = 'add_followers'
@@ -33,6 +35,7 @@ GET_FOLLOWERS = 'get_followers'
 MAIN_MENU = ""
 USER_ID = "User ID"
 PRODUCT_ID = "Product ID"
+FOLLOW_ID = "Follower ID"
 
 # @api.route('/hello')
 # class HelloWorld(Resource):
@@ -273,28 +276,73 @@ class ShoppingCart(Resource):
         new_prod_name = "new prod"
         return usr.add_shopping_cart(username, new_prod_name)
     
-    def delete(self, username):
-        """
-        This method deletes a product from user shopping cart.
-        """
-        return usr.delete_shopping_cart()
-    
     # def calc_checkout_price(self):
     #     """
     #     This method calculates total price of all products in user shopping cart.
     #     """
     #     return usr.calc_checkout_price()
+    
+# for deleting a product based on product name
+@api.route(f'/{DELETE_SHOPPING_CART}/<user_name>')
+class DeleteShoppingCart(Resource):
+    """
+    Deletes a product by from the shopping cart of a iser by product name.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
+    def delete(self, user_name):
+        """
+        Deletes a product by from the shopping cart of a iser by product name.
+        """
+        new_prod_name = "new prod"
+        try:
+            usr.delete_shopping_cart(user_name, new_prod_name)
+            return { new_prod_name: 'Deleted'}
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
+        
+follow_fields = api.model('NewFollower', {
+    add_follower.USERNAME: fields.String,
+    add_follower.FOLLOWERS: fields.String,
+})
 
 @api.route(f'/{FOLLOWERS}')
-class Followers(Resource):
+class GetFollowers(Resource):
     """
     This class supports fetching user's followers.
     """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
     def get(self):
         """
         This method returns all followers.
         """
         return get_follower.get_followers(), 201
+        
+# for adding followers
+@api.route(f'/{ADD_FOLLOWERS}')
+class AddFollowers(Resource):
+    """
+    This class supports adding new followers for a user 
+    """
+    @api.expect(follow_fields)
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
+    def post(self):
+        """
+        This method adds new followers for a user 
+        """
+        username = request.json[add_follower.USERNAME]
+        followers = request.json[add_follower.FOLLOWERS]
+        
+        try:
+            new_following = add_follower.add_followers(username, followers)
+            if new_following is None:
+                raise wz.ServiceUnavailable('There is a technical issue.')
+            return {FOLLOW_ID: new_following}
+        except ValueError as e:
+            raise wz.NotAcceptable(f'{str(e)}')
+
 
 # Use get_shopping_cart() from users.py to show all products in user shopping cart
 @api.route(f'/{SAVED}/<username>')
@@ -318,10 +366,20 @@ class Saved(Resource):
         new_prod_name = "new prod"
         return usr.add_saved(username, new_prod_name)
 
+
+@api.route(f'/{DELETE_SAVED}/<user_name>')
+class DeleteSaved(Resource):
     
-    def delete(self, username):
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
+    def delete(self, user_name):
         """
-        This method deletes a product from user shopping cart.
+        Deletes a product by from the saved list of a iser by product name.
         """
-        return usr.delete_saved()
-    
+        new_prod_name = "new prod"
+        try:
+            usr.delete_saved(user_name, new_prod_name)
+            return { new_prod_name: 'Deleted'}
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
+
