@@ -1,7 +1,7 @@
 #!/bin/bash
 # This shell script deploys a new version to a server.
 
-PROJ_DIR=DOPROTO_23
+PROJ_DIR=DOProto_23
 VENV=Fall2023
 PA_DOMAIN="DOProto23.pythonanywhere.com"
 PA_USER='DOProto23'
