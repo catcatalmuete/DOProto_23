@@ -4,6 +4,14 @@ The endpoint called `endpoints` will return all available endpoints.
 """
 from http import HTTPStatus
 
+import os
+import sys
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+parent_dir = os.path.join(current_dir, '..')
+sys.path.append(parent_dir)
+
 from flask import request, Flask
 from flask_restx import Resource, Api, fields
 import werkzeug.exceptions as wz
@@ -122,6 +130,41 @@ class Users(Resource):
         """
         This method returns all users.
         """
+<<<<<<< HEAD
+        return usr.get_users(), 201
+
+    def post(self):
+        """
+        This method creates a new user.
+        """
+        data = request.get_json()
+        new_user = usr.create_user(
+            data['username'],
+            data['user_id'],
+            data['password'],
+            data['shopping_cart']
+            )
+
+        if new_user:
+            return {'message': 'User added successfully'}, 201
+        else:
+            return {'message': 'Failed to add user'}, 409
+
+    def delete(self):
+        """
+        This method deletes a user.
+        """
+        data = request.get_json()
+        if 'username' not in data or 'user_id' not in data:
+            return {'message': 'Username and user_id required for deleting a user'}, 400
+        filter = {'username': data['username'], 'user_id': data['user_id']}
+        deleted_user = usr.delete_user(filter, usr.USERS_COLLECT)
+
+        if deleted_user:
+            return {'message': 'User deleted successfully'}, 200
+        else:
+            return {'message': 'Failed to delete user'}, 404
+=======
         print("this is user data: ", usr.get_users())
         return usr.get_users()
     
@@ -147,6 +190,7 @@ class Users(Resource):
             return {USER_ID: new_user}
         except ValueError as e:
             raise wz.NotAcceptable(f'{str(e)}')
+>>>>>>> 188c666b1016cb52492c7feb015f099203c70057
 
 
 product_fields = api.model('NewProduct', {
@@ -169,17 +213,52 @@ class GetProduct(Resource):
         This method returns all products.
         """
         return get_prod.get_product(), 201
+<<<<<<< HEAD
+
+
+
+
+=======
     
+>>>>>>> 188c666b1016cb52492c7feb015f099203c70057
 # for product listing
 @api.route(f'/{ADD_PRODUCT}')
 class AddProduct(Resource):
     """
-    This class supports users adding their own product on app
+    This class supports users adding their own product on the app
     """
     @api.expect(product_fields)
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
     def post(self):
+<<<<<<< HEAD
+        data = request.get_json()
+
+        # validation of product before adding
+        if 'user_id' not in data or 'name' not in data or 'price' not in data \
+                or 'condition' not in data or 'brand' not in data \
+                or 'categories' not in data or 'date_posted' not in data \
+                or 'comments' not in data:
+            return {'message': 'All fields required for adding product'}
+
+        # add the product
+        new_product = prods.add_product(
+            data['user_id'],
+            data['name'],
+            data['price'],
+            data['condition'],
+            data['brand'],
+            data['categories'],
+            data['date_posted'],
+            data['comments'],
+        )
+
+        if new_product:
+            return {'message': 'Product added successfully'}, 201
+        else:
+            return {'message': 'Failed to add product'}, 409
+
+=======
         """
         This method adds a product
         """
@@ -222,6 +301,7 @@ class DeleteProduct(Resource):
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
     
+>>>>>>> 188c666b1016cb52492c7feb015f099203c70057
 
 # Updating product information
 @api.route(f'/{UPDATE_PRODUCT}')
@@ -230,11 +310,16 @@ class UpdateProduct(Resource):
     This class supports users updating their product information
     """
     def put(self):
+<<<<<<< HEAD
+        data = request.get_json()
+
+=======
          """
         This method updates a product.
         """
          data = request.get_json()
         
+>>>>>>> 188c666b1016cb52492c7feb015f099203c70057
         # validation of product before updating
          if 'name' not in data or 'price' not in data \
             or 'condition' not in data or 'brand' not in data \
@@ -243,17 +328,32 @@ class UpdateProduct(Resource):
             return {'message': 'All fields required for updating product'}
 
         # update the product
+<<<<<<< HEAD
+        updated_product = prods.update_product(
+            data['name'],
+=======
          updated_product = prods.update_product(
             data['name'], 
+>>>>>>> 188c666b1016cb52492c7feb015f099203c70057
             data['price'],
             data['condition'],
             data['brand'],
             data['categories'],
             data['date_posted'],
             data['comments'],
+<<<<<<< HEAD
+            )
+
+        if updated_product:
+            return {'message': 'Product updated successfully'}, 201
+        else:
+            return {'message': 'Failed to update product'}, 409
+
+=======
             )  
          return updated_product
         
+>>>>>>> 188c666b1016cb52492c7feb015f099203c70057
 # Use get_shopping_cart() from users.py to show all products in user shopping cart
 @api.route(f'/{SHOPPING_CART}/<username>')
 class ShoppingCart(Resource):
@@ -273,6 +373,17 @@ class ShoppingCart(Resource):
         """
         This method adds a product to user shopping cart.
         """
+<<<<<<< HEAD
+        return usr.add_shopping_cart()
+
+    def delete(self):
+        """
+        This method deletes a product from user shopping cart.
+        """
+        return usr.delete_shopping_cart()
+
+    def calc_checkout_price(self):
+=======
         new_prod_name = "new prod"
         return usr.add_shopping_cart(username, new_prod_name)
     
@@ -291,6 +402,7 @@ class DeleteShoppingCart(Resource):
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
     def delete(self, user_name):
+>>>>>>> 188c666b1016cb52492c7feb015f099203c70057
         """
         Deletes a product by from the shopping cart of a iser by product name.
         """
