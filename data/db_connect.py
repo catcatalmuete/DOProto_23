@@ -29,7 +29,9 @@ def connect_db():
                 raise ValueError('You must set your password '
                                  + 'to use Mongo in the cloud.')
             print("Connecting to Mongo in the cloud.")
-            client = pm.MongoClient(f'mongodb+srv://eileent7129:{password}@doproto.gdknfwd.mongodb.net/?retryWrites=true&w=majority')
+            client = pm.MongoClient(f'mongodb+srv://eileent7129:{password}'
+                                    + '@doproto.gdknfwd.mongodb.net/' 
+                                    + '?retryWrites=true&w=majority')
             # PA recommends these settings:
             # + 'connectTimeoutMS=30000&'
             # + 'socketTimeoutMS=None
@@ -80,3 +82,10 @@ def fetch_all_as_dict(key, collection, db=USER_DB):
         del doc[MONGO_ID]
         ret[doc[key]] = doc
     return ret
+
+def update_one(collection, filt, update, db=USER_DB):
+    """
+    Update a document
+    """
+    client[db][collection].update_one(filt, update)
+  
