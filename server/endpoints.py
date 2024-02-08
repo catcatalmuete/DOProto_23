@@ -7,6 +7,9 @@ from http import HTTPStatus
 import os
 import sys
 
+from flask import Flask
+from flask import CORS
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 parent_dir = os.path.join(current_dir, '..')
@@ -25,6 +28,7 @@ import data.get_followers as get_follower
 
 app = Flask(__name__)
 api = Api(app)
+CORS(app)
 
 USERS = 'users'
 DELETE = 'delete'
