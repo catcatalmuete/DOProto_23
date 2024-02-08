@@ -130,7 +130,6 @@ class Users(Resource):
         """
         This method returns all users.
         """
-<<<<<<< HEAD
         return usr.get_users(), 201
 
     def post(self):
@@ -164,33 +163,6 @@ class Users(Resource):
             return {'message': 'User deleted successfully'}, 200
         else:
             return {'message': 'Failed to delete user'}, 404
-=======
-        print("this is user data: ", usr.get_users())
-        return usr.get_users()
-    
-    @api.expect(user_fields)
-    @api.response(HTTPStatus.OK, 'Success')
-    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
-    def post(self):
-        """
-        Add a new user.
-        """
-        # if request.headers['Content-Type'] != 'application/json':
-        #     return jsonify({'error': 'needs to be application/json'}), 415
-        
-        username = request.json[usr.USERNAME]
-        user_id = request.json[usr.USER_ID]
-        password = request.json[usr.PASSWORD]
-        shopping_cart = request.json[usr.SHOPPING_CART]
-        saved = request.json[usr.SAVED]
-        try:
-            new_user = usr.create_user(username, user_id, password, shopping_cart, saved)
-            if new_user is None:
-                raise wz.ServiceUnavailable('There is a technical issue.')
-            return {USER_ID: new_user}
-        except ValueError as e:
-            raise wz.NotAcceptable(f'{str(e)}')
->>>>>>> 188c666b1016cb52492c7feb015f099203c70057
 
 
 product_fields = api.model('NewProduct', {
@@ -213,14 +185,10 @@ class GetProduct(Resource):
         This method returns all products.
         """
         return get_prod.get_product(), 201
-<<<<<<< HEAD
 
 
 
 
-=======
-    
->>>>>>> 188c666b1016cb52492c7feb015f099203c70057
 # for product listing
 @api.route(f'/{ADD_PRODUCT}')
 class AddProduct(Resource):
@@ -231,7 +199,6 @@ class AddProduct(Resource):
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
     def post(self):
-<<<<<<< HEAD
         data = request.get_json()
 
         # validation of product before adding
@@ -258,50 +225,6 @@ class AddProduct(Resource):
         else:
             return {'message': 'Failed to add product'}, 409
 
-=======
-        """
-        This method adds a product
-        """
-        user_id = request.json[prods.USER_ID]
-        name = request.json[prods.PRODUCT_NAME]
-        price = request.json[prods.PRODUCT_PRICE]
-        condition = request.json[prods.PRODUCT_CONDITION]
-        brand = request.json[prods.PRODUCT_BRAND]
-        categories = request.json[prods.PRODUCT_CATEGORIES]
-        date_posted = request.json[prods.PRODUCT_DATE_POSTED]
-        comments = request.json[prods.PRODUCT_COMMENTS]
-        
-        try:
-            new_product = prods.add_product(user_id, name, price, condition, brand, categories, date_posted, comments)
-            if new_product is None:
-                raise wz.ServiceUnavailable('There is a technical issue.')
-            return {PRODUCT_ID: new_product}
-        except ValueError as e:
-            raise wz.NotAcceptable(f'{str(e)}')
-        # if new_product:
-        #     return {'message': 'Product added successfully'}, 201
-        # else:
-        #     return {'message': 'Failed to add product'}, 409
-
-# for deleting a product based on product name
-@api.route(f'/{DELETE_PRODUCT}/<prod_name>')
-class DeleteProduct(Resource):
-    """
-    Deletes a product by product name.
-    """
-    @api.response(HTTPStatus.OK, 'Success')
-    @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
-    def delete(self, prod_name):
-        """
-        Deletes a product by product name.
-        """
-        try:
-            del_prod.delete_product(prod_name)
-            return {prod_name: 'Deleted'}
-        except ValueError as e:
-            raise wz.NotFound(f'{str(e)}')
-    
->>>>>>> 188c666b1016cb52492c7feb015f099203c70057
 
 # Updating product information
 @api.route(f'/{UPDATE_PRODUCT}')
@@ -310,38 +233,24 @@ class UpdateProduct(Resource):
     This class supports users updating their product information
     """
     def put(self):
-<<<<<<< HEAD
         data = request.get_json()
 
-=======
-         """
-        This method updates a product.
-        """
-         data = request.get_json()
-        
->>>>>>> 188c666b1016cb52492c7feb015f099203c70057
         # validation of product before updating
-         if 'name' not in data or 'price' not in data \
+        if 'name' not in data or 'price' not in data \
             or 'condition' not in data or 'brand' not in data \
                     or 'categories' not in data or 'date_posted' not in data \
                         or 'comments' not in data:
             return {'message': 'All fields required for updating product'}
 
         # update the product
-<<<<<<< HEAD
         updated_product = prods.update_product(
             data['name'],
-=======
-         updated_product = prods.update_product(
-            data['name'], 
->>>>>>> 188c666b1016cb52492c7feb015f099203c70057
             data['price'],
             data['condition'],
             data['brand'],
             data['categories'],
             data['date_posted'],
             data['comments'],
-<<<<<<< HEAD
             )
 
         if updated_product:
@@ -349,11 +258,6 @@ class UpdateProduct(Resource):
         else:
             return {'message': 'Failed to update product'}, 409
 
-=======
-            )  
-         return updated_product
-        
->>>>>>> 188c666b1016cb52492c7feb015f099203c70057
 # Use get_shopping_cart() from users.py to show all products in user shopping cart
 @api.route(f'/{SHOPPING_CART}/<username>')
 class ShoppingCart(Resource):
@@ -373,7 +277,6 @@ class ShoppingCart(Resource):
         """
         This method adds a product to user shopping cart.
         """
-<<<<<<< HEAD
         return usr.add_shopping_cart()
 
     def delete(self):
@@ -382,33 +285,13 @@ class ShoppingCart(Resource):
         """
         return usr.delete_shopping_cart()
 
-    def calc_checkout_price(self):
-=======
-        new_prod_name = "new prod"
-        return usr.add_shopping_cart(username, new_prod_name)
-    
-    # def calc_checkout_price(self):
-    #     """
-    #     This method calculates total price of all products in user shopping cart.
-    #     """
-    #     return usr.calc_checkout_price()
-    
-# for deleting a product based on product name
-@api.route(f'/{DELETE_SHOPPING_CART}/<user_name>')
-class DeleteShoppingCart(Resource):
-    """
-    Deletes a product by from the shopping cart of a iser by product name.
-    """
-    @api.response(HTTPStatus.OK, 'Success')
-    @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
-    def delete(self, user_name):
->>>>>>> 188c666b1016cb52492c7feb015f099203c70057
+    def calc_checkout_price(self, username):
         """
         Deletes a product by from the shopping cart of a iser by product name.
         """
         new_prod_name = "new prod"
         try:
-            usr.delete_shopping_cart(user_name, new_prod_name)
+            usr.delete_shopping_cart(username, new_prod_name)
             return { new_prod_name: 'Deleted'}
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
