@@ -62,29 +62,6 @@ FOLLOW_ID = "Follower ID"
 #         endpoints = sorted(rule.rule for rule in api.app.url_map.iter_rules())
 #         return {"Available endpoints": endpoints}
 
-
-# @api.route(f'/{MAIN_MENU}')
-# @api.route('/')
-# class MainMenu(Resource):
-#     """
-#     This will deliver our main menu.
-#     """
-#     def get(self):
-#         """
-#         Gets the main game menu.
-#         """
-#         return {'Title': MAIN_MENU,
-#                 'Default': 2,
-#                 'Choices': {
-#                     '1': {'url': '/', 'method': 'get',
-#                           'text': 'List Available Characters'},
-#                     '2': {'url': '/',
-#                           'method': 'get', 'text': 'List Active Games'},
-#                     '3': {'url': f'/{USERS}',
-#                           'method': 'get', 'text': 'List Users'},
-#                     'X': {'text': 'Exit'},
-#                 }}
-
 user_fields = api.model('NewUser', {
     usr.USERNAME: fields.String,
     usr.USER_ID: fields.String,
