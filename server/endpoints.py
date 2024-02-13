@@ -8,7 +8,7 @@ import os
 import sys
 
 from flask import Flask
-from flask import CORS
+from flask_cors import CORS
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -48,20 +48,6 @@ MAIN_MENU = ""
 USER_ID = "User ID"
 PRODUCT_ID = "Product ID"
 FOLLOW_ID = "Follower ID"
-
-# @api.route('/hello')
-# class HelloWorld(Resource):
-#     """
-#     The purpose of the HelloWorld class is to have a simple test to see if the
-#     app is working at all.
-#     """
-#     def get(self):
-#         """
-#         A trivial endpoint to see if the server is running.
-#         It just answers with "hello world."
-#         """
-#         return {'hello': 'world'}
-
 
 # @api.route('/endpoints')
 # class Endpoints(Resource):
