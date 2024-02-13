@@ -49,7 +49,10 @@ jobs:
 
       - name: Run Python tests.
         run: make tests
-        
+
+      - name: Grant execute permission to deploy.sh
+        run: chmod +x ./deploy.sh
+         
       - name: Deploy to PythonAnywhere
         run: ./deploy.sh
         env:
