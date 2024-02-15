@@ -53,8 +53,7 @@ jobs:
       - name: Grant execute permission to deploy.sh
         run: chmod +x ./deploy.sh
          
-      - name: Deploy to PythonAnywhere
-        run: ./deploy.sh
-        env:
-          $PA_PWD: ${{secrets.PA_PWD}}
-          $PA_USER: ${{secrets.PA_USER}}
+      # - name: Deploy to PythonAnywhere
+      #   run: ./deploy.sh
+      #   env:
+      #     $PA_PWD: ${{secrets.PA_PWD}}
