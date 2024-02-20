@@ -63,11 +63,13 @@ FOLLOW_ID = "Follower ID"
 #         return {"Available endpoints": endpoints}
 
 user_fields = api.model('NewUser', {
-    usr.USERNAME: fields.String,
-    usr.USER_ID: fields.String,
+    usr.FIRST_NAME: fields.String,
+	usr.LAST_NAME: fields.String,
+	usr.USERNAME: fields.String,
+    usr.EMAIL: fields.String,
     usr.PASSWORD: fields.String,
-    usr.SHOPPING_CART: fields.String,
-    usr.SAVED: fields.String
+    usr.SHOPPING_CART: fields.List(fields.String),
+    usr.SAVED: fields.List(fields.String),
 })
 
 @api.route(f'/{DEL_USER}/<username>')
@@ -98,38 +100,26 @@ class Users(Resource):
         This method returns all users.
         """
         return usr.get_users(), 201
-
+    
+    @api.expect(user_fields)
     def post(self):
         """
         This method creates a new user.
         """
+       
         data = request.get_json()
         new_user = usr.create_user(
+            data['first_name'],
+            data['last_name'],
             data['username'],
-            data['user_id'],
-            data['password'],
-            data['shopping_cart']
+            data['email'],
+            data['password']
             )
 
         if new_user:
             return {'message': 'User added successfully'}, 201
         else:
             return {'message': 'Failed to add user'}, 409
-
-    def delete(self):
-        """
-        This method deletes a user.
-        """
-        data = request.get_json()
-        if 'username' not in data or 'user_id' not in data:
-            return {'message': 'Username and user_id required for deleting a user'}, 400
-        filter = {'username': data['username'], 'user_id': data['user_id']}
-        deleted_user = usr.delete_user(filter, usr.USERS_COLLECT)
-
-        if deleted_user:
-            return {'message': 'User deleted successfully'}, 200
-        else:
-            return {'message': 'Failed to delete user'}, 404
 
 
 product_fields = api.model('NewProduct', {

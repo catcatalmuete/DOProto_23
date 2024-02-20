@@ -3,10 +3,13 @@ This module interfaces to our user data.
 """
 import data.db_connect as dbc
 import data.add_product as add_prod
+from bson import ObjectId
 
 USERNAME = "username"
-USER_ID = "user_id"
+EMAIL = "email"
 PASSWORD = "password"
+FIRST_NAME = "first_name"
+LAST_NAME = "last_name"
 SHOPPING_CART = "shopping_cart" # meant to be a list, but will be saved as a string with commas
 SAVED = "saved" # meant to be a list, but will be saved as a string with commas
 MIN_USER_NAME_LEN = 6
@@ -16,19 +19,26 @@ USERS_COLLECT = "users"
 
 def get_users() -> dict:
     dbc.connect_db()
-    return dbc.fetch_all_as_dict(USERNAME, USERS_COLLECT)
+    users = dbc.fetch_all_as_dict(USERNAME, USERS_COLLECT)
+    for user in users.values():
+        user[SHOPPING_CART] = [str(item) for item in user.get(SHOPPING_CART, []) if isinstance(item, ObjectId)]
+        user[SAVED] = [str(item) for item in user.get(SAVED, []) if isinstance(item, ObjectId)]
+    return users
+    
 
-def create_user(username : str, user_id : str, password : str, shopping_cart : str, saved : str):
+def create_user(first_name: str, last_name: str, username : str, email : str, password : str):
     dbc.connect_db()
     found_user = dbc.fetch_one(USERS_COLLECT,{USERNAME: username})
     if found_user:
         raise ValueError(f'Duplicate username: {username=}')
     new_user = {}
+    new_user[FIRST_NAME] = first_name
+    new_user[LAST_NAME] = last_name
     new_user[USERNAME] = username
-    new_user[USER_ID] = user_id
+    new_user[EMAIL] = email
     new_user[PASSWORD] = password
-    new_user[SHOPPING_CART] = shopping_cart
-    new_user[SAVED] = saved
+    new_user[SHOPPING_CART] = []
+    new_user[SAVED] = []
     _id = dbc.insert_one(USERS_COLLECT, new_user)
     return _id is not None
 
