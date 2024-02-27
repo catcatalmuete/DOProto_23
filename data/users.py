@@ -12,6 +12,7 @@ FIRST_NAME = "first_name"
 LAST_NAME = "last_name"
 SHOPPING_CART = "shopping_cart" # meant to be a list, but will be saved as a string with commas
 SAVED = "saved" # meant to be a list, but will be saved as a string with commas
+FOLLOWERS = "followers"
 MIN_USER_NAME_LEN = 6
 MIN_PASSWORD_LEN = 8
 USERS_COLLECT = "users"
@@ -23,6 +24,7 @@ def get_users() -> dict:
     for user in users.values():
         user[SHOPPING_CART] = [str(item) for item in user.get(SHOPPING_CART, []) if isinstance(item, ObjectId)]
         user[SAVED] = [str(item) for item in user.get(SAVED, []) if isinstance(item, ObjectId)]
+        user[FOLLOWERS] = [str(item) for item in user.get(FOLLOWERS, []) if isinstance(item, ObjectId)]
     return users
     
 
@@ -39,6 +41,7 @@ def create_user(first_name: str, last_name: str, username : str, email : str, pa
     new_user[PASSWORD] = password
     new_user[SHOPPING_CART] = []
     new_user[SAVED] = []
+    new_user[FOLLOWERS] = []
     _id = dbc.insert_one(USERS_COLLECT, new_user)
     return _id is not None
 

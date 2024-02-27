@@ -70,6 +70,7 @@ user_fields = api.model('NewUser', {
     usr.PASSWORD: fields.String,
     usr.SHOPPING_CART: fields.List(fields.String),
     usr.SAVED: fields.List(fields.String),
+    usr.FOLLOWERS: fields.List(fields.String),
 })
 
 @api.route(f'/{DEL_USER}/<username>')
