@@ -335,4 +335,22 @@ class DeleteSaved(Resource):
             return { new_prod_name: 'Deleted'}
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
+    
+
+    @api.route('/messages/<user1>/<user2>') #change formatting, this is just inital template
+    class Messages(Resource):
+        def get(self, user1, user2):
+            # fetch the messages between user1 and user2 from your database
+            # messages = db.Messages.find({"$or": [{"user1": user1, "user2": user2}, {"user1": user2, "user2": user1}]})
+            # return messages
+            pass
+
+        # @api.expect(message_fields)
+        def post(self, user1, user2):
+            # Here you would typically add a new message to your database
+            # For example:
+            # db.Messages.insert(api.payload)
+            # return {"message": "Message added successfully"}, HTTPStatus.CREATED
+            pass
+
 
