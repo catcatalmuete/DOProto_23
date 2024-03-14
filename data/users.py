@@ -53,7 +53,7 @@ def get_shopping_cart(username: str):
     dbc.connect_db()
     user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
     if user:
-        shopping_cart = user.get(SHOPPING_CART, "")
+        shopping_cart = [str(item) for item in user.get(SHOPPING_CART, []) if isinstance(item, ObjectId)]
         return shopping_cart
  
 def add_shopping_cart(username: str, prod_name : str):
