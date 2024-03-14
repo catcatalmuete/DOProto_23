@@ -109,18 +109,21 @@ class Users(Resource):
         """
        
         data = request.get_json()
-        new_user = usr.create_user(
-            data['first_name'],
-            data['last_name'],
-            data['username'],
-            data['email'],
-            data['password']
-            )
+        try:
+            new_user = usr.create_user(
+                data['first_name'],
+                data['last_name'],
+                data['username'],
+                data['email'],
+                data['password']
+                )
 
-        if new_user:
-            return {'message': 'User added successfully'}, 201
-        else:
-            return {'message': 'Failed to add user'}, 409
+            if new_user:
+                return {'message': 'User added successfully'}, 201
+            else:
+                raise wz.BadRequest(f"User not acceptable: {data['username']}")
+        except ValueError as e:
+            raise wz.BadRequest(f'{str(e)}')
 
 
 product_fields = api.model('NewProduct', {
