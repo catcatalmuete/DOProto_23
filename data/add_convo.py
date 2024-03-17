@@ -10,6 +10,7 @@ MESSAGES = "messages"
 TIME_UPDATED = "updated"
 
 # get 2 usernames as strings
+dbc.connect_db()
 user1 = dbc.fetch_one(users, {'_id': USER_ID_1})['username']
 user2 = dbc.fetch_one(users, {'_id': USER_ID_2})['username']
 
