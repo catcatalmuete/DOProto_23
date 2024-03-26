@@ -56,15 +56,22 @@ def get_shopping_cart(username: str):
         shopping_cart = [str(item) for item in user.get(SHOPPING_CART, []) if isinstance(item, ObjectId)]
         return shopping_cart
  
-def add_shopping_cart(username: str, prod_name : str):
+def add_shopping_cart(username: str, prod_id : str):
     dbc.connect_db()
     user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
     if user:
-        shopping_cart = user.get(SHOPPING_CART, "")
-        shopping_cart_list = shopping_cart.split(',') if shopping_cart else []
-        shopping_cart_list.append(prod_name)
-        updated_shopping_cart = ','.join(map(str, shopping_cart_list))
-        return dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SHOPPING_CART: updated_shopping_cart}})
+        shopping_cart = user.get(SHOPPING_CART, [])
+        if isinstance(prod_id, str):
+            prod_id = ObjectId(prod_id)
+        shopping_cart.append(prod_id)
+        result = dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SHOPPING_CART: shopping_cart}})
+        if result:
+            return {"message": "Product added to shopping cart successfully"}, 201
+        else:
+            return {"message" : "Failed to add product to shopping cart."}, 409
+        
+    else:
+        raise ValueError(f"User '{username}' not found")
        
 
 def delete_shopping_cart(username: str, del_prod : str):

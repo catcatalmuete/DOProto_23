@@ -18,6 +18,7 @@ sys.path.append(parent_dir)
 from flask import request, Flask
 from flask_restx import Resource, Api, fields
 import werkzeug.exceptions as wz
+import data.db_connect as dbc
 import data.users as usr
 import data.add_product as prods
 import data.get_product as get_prod
@@ -109,18 +110,23 @@ class Users(Resource):
         """
        
         data = request.get_json()
-        new_user = usr.create_user(
-            data['first_name'],
-            data['last_name'],
-            data['username'],
-            data['email'],
-            data['password']
-            )
-
-        if new_user:
-            return {'message': 'User added successfully'}, 201
-        else:
-            return {'message': 'Failed to add user'}, 409
+        try:
+            new_user = usr.create_user(
+				data['first_name'],
+				data['last_name'],
+				data['username'],
+				data['email'],
+				data['password']
+			)
+            if new_user:
+                 return {'message': 'User added successfully'}, 201
+            else:
+                 raise wz.BadRequest(f"User not acceptable: {data['username']}")
+        except ValueError as e:
+            raise wz.BadRequest(f'{str(e)}')
+        
+        
+            
 
 
 product_fields = api.model('NewProduct', {
@@ -216,43 +222,53 @@ class UpdateProduct(Resource):
         else:
             return {'message': 'Failed to update product'}, 409
 
-# Use get_shopping_cart() from users.py to show all products in user shopping cart
+shopping_fields = api.model('NewProductForShoppingCart', {
+    get_prod.PRODUCT_ID: fields.String,
+   
+})
+        
 @api.route(f'/{SHOPPING_CART}/<username>')
-class ShoppingCart(Resource):
+class AddToShoppingCart(Resource):
     """
-    This class supports fetching user's shopping cart.
+    This class supports adding to a user's shopping cart
     """
-    def get(self, username):
-        """
-        This method returns all products shopping cart.
-        """
-        try:
-            return usr.get_shopping_cart(username)
-        except ValueError as e:
-            raise wz.NotFound(f'{str(e)}')
-
+    @api.expect(shopping_fields)
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
     def post(self, username):
         """
         This method adds a product to user shopping cart.
         """
-        return usr.add_shopping_cart()
-
-    def delete(self):
-        """
-        This method deletes a product from user shopping cart.
-        """
-        return usr.delete_shopping_cart()
-
-    def calc_checkout_price(self, username):
-        """
-        Deletes a product by from the shopping cart of a iser by product name.
-        """
-        new_prod_name = "new prod"
+        data = request.get_json()
+       
+        if '_id' not in data:
+            raise wz.BadRequest(f"_id required for adding to shopping cart")
+        
         try:
-            usr.delete_shopping_cart(username, new_prod_name)
-            return { new_prod_name: 'Deleted'}
+            result = usr.add_shopping_cart(username, data['_id'])
+            if result:
+                return {"message": "Product added to shopping cart successfully"}, 201
+            else:
+                return {"message": "Failed to add product to shopping cart"}, 409
         except ValueError as e:
-            raise wz.NotFound(f'{str(e)}')
+            raise wz.NotFound(str(e))
+
+#     def delete(self):
+#         """
+#         This method deletes a product from user shopping cart.
+#         """
+#         return usr.delete_shopping_cart()
+
+#     def calc_checkout_price(self, username):
+#         """
+#         Deletes a product by from the shopping cart of a iser by product name.
+#         """
+#         new_prod_name = "new prod"
+#         try:
+#             usr.delete_shopping_cart(username, new_prod_name)
+#             return { new_prod_name: 'Deleted'}
+#         except ValueError as e:
+#             raise wz.NotFound(f'{str(e)}')
         
 follow_fields = api.model('NewFollower', {
     add_follower.USERNAME: fields.String,
