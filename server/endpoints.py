@@ -26,7 +26,6 @@ import data.delete_product as del_prod
 import data.add_followers as add_follower
 import data.get_followers as get_follower
 
-
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
