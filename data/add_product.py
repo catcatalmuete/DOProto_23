@@ -9,6 +9,7 @@ PRODUCT_BRAND = "brand"
 PRODUCT_CATEGORIES = "categories"
 PRODUCT_DATE_POSTED = "date posted"
 PRODUCT_COMMENTS = "comments"
+PRODUCT_ID = "_id"
 
 """
 Params:

@@ -9,6 +9,8 @@ PRODUCT_BRAND = "brand"
 PRODUCT_CATEGORIES = "categories"
 PRODUCT_DATE_POSTED = "date_posted"
 PRODUCT_COMMENTS = "comments"
+PRODUCT_ID = "_id"
+
 
 def get_product():
 	dbc.connect_db()

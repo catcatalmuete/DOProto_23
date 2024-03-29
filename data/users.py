@@ -53,8 +53,18 @@ def get_shopping_cart(username: str):
     dbc.connect_db()
     user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
     if user:
-        shopping_cart = [str(item) for item in user.get(SHOPPING_CART, []) if isinstance(item, ObjectId)]
-        return shopping_cart
+        shopping_cart_ids = user.get(SHOPPING_CART, [])
+        shopping_cart_products = []
+        for product_id in shopping_cart_ids:
+            product = dbc.fetch_one("products", {"_id": product_id})
+            if product:
+                 shopping_cart_products.append(product)
+            else:
+                 return {"message": f"Product with ID {product_id} not found."}
+        return shopping_cart_products
+    else:
+        raise ValueError(f"User {username} not found")
+
  
 def add_shopping_cart(username: str, prod_id : str):
     dbc.connect_db()
@@ -78,15 +88,7 @@ def delete_shopping_cart(username: str, del_prod : str):
     dbc.connect_db()
     user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
     if user:
-        shopping_cart = user.get(SHOPPING_CART, "")
-        shopping_cart_list = shopping_cart.split(',') if shopping_cart else []
-        try:
-            shopping_cart_list.remove(del_prod)
-        except ValueError:
-            pass
-        
-        updated_shopping_cart = ','.join(map(str, shopping_cart_list))
-        return dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SHOPPING_CART: updated_shopping_cart}})
+        shopping_cart = user.get(SHOPPING_CART, [])
 
 def calc_checkout_price():
     dbc.connect_db()

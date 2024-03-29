@@ -37,6 +37,7 @@ ADD_PRODUCT = 'add_product'
 DELETE_PRODUCT = 'delete_product'
 UPDATE_PRODUCT = 'update_product'
 SHOPPING_CART = 'shopping_cart'
+ADD_SHOPPING_CART = 'add_shopping_cart'
 DELETE_SHOPPING_CART = 'delete_shopping_cart'
 SAVED = 'saved'
 DELETE_SAVED = 'delete_saved'
@@ -226,7 +227,7 @@ shopping_fields = api.model('NewProductForShoppingCart', {
    
 })
         
-@api.route(f'/{SHOPPING_CART}/<username>')
+@api.route(f'/{ADD_SHOPPING_CART}/<username>')
 class AddToShoppingCart(Resource):
     """
     This class supports adding to a user's shopping cart
@@ -252,11 +253,22 @@ class AddToShoppingCart(Resource):
         except ValueError as e:
             raise wz.NotFound(str(e))
 
-#     def delete(self):
-#         """
-#         This method deletes a product from user shopping cart.
-#         """
-#         return usr.delete_shopping_cart()
+@api.route(f'/{SHOPPING_CART}/<username>')
+class ShoppingCart(Resource):
+    
+	def get(self, username):
+		""" This method returns the products in a user's shopping cart"""
+        
+		return usr.get_shopping_cart(username);        
+
+	# @api.expect(shopping_fields)
+	# @api.response(HTTPStatus.OK, 'Success')
+	# @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
+	# def delete(self):
+	# 	"""
+    #     This method deletes a product from user shopping cart.
+    #     """
+	# 	return usr.delete_shopping_cart()
 
 #     def calc_checkout_price(self, username):
 #         """
