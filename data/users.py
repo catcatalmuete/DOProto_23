@@ -89,6 +89,9 @@ def delete_shopping_cart(username: str, del_prod : str):
     user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
     if user:
         shopping_cart = user.get(SHOPPING_CART, [])
+        if isinstance(prod_id, str):
+            prod_id = ObjectId(prod_id)
+        
 
 def calc_checkout_price():
     dbc.connect_db()
