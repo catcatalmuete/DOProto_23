@@ -84,13 +84,20 @@ def add_shopping_cart(username: str, prod_id : str):
         raise ValueError(f"User '{username}' not found")
        
 
-def delete_shopping_cart(username: str, del_prod : str):
+def delete_shopping_cart(username: str, prod_id : str):
     dbc.connect_db()
     user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
     if user:
         shopping_cart = user.get(SHOPPING_CART, [])
         if isinstance(prod_id, str):
             prod_id = ObjectId(prod_id)
+        shopping_cart.remove(prod_id)
+        result = dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SHOPPING_CART: shopping_cart}})
+        if result:
+            return {"message": "Product removed from shopping cart successfully"}, 201
+        else:
+            return {"message" : "Failed to remove product from shopping cart."}, 409
+        
         
 
 def calc_checkout_price():

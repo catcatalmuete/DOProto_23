@@ -261,15 +261,29 @@ class ShoppingCart(Resource):
         
 		return usr.get_shopping_cart(username);        
 
-	# @api.expect(shopping_fields)
-	# @api.response(HTTPStatus.OK, 'Success')
-	# @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
-	# def delete(self):
-	# 	"""
-    #     This method deletes a product from user shopping cart.
-    #     """
-	# 	return usr.delete_shopping_cart()
-
+	@api.expect(shopping_fields)
+	@api.response(HTTPStatus.OK, 'Success')
+	@api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
+	def delete(self, username):
+		"""
+        This method deletes a product from user shopping cart.
+        """
+		data = request.get_json()
+        
+		if '_id' not in data:
+			raise wz.BadRequest(f'_id required to remove from shopping cart')
+          
+		try:
+			result = usr.delete_shopping_cart(username, data['_id'])
+			if result:
+				return {"message": "Product removed from shopping cart successfully."}, 201
+			else:
+				return {"message": "Failed to remove product from shopping cart."}, 409
+		except ValueError as e:
+			raise wz.NotFound(str(e))
+          
+        
+        
 #     def calc_checkout_price(self, username):
 #         """
 #         Deletes a product by from the shopping cart of a iser by product name.
