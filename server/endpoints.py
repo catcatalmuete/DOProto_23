@@ -25,6 +25,10 @@ import data.get_product as get_prod
 import data.delete_product as del_prod
 import data.add_followers as add_follower
 import data.get_followers as get_follower
+import data.get_convo as get_convo
+import data.add_convo as add_convo
+import data.update_convo as update_convo
+import data.delete_convo as delete_convo
 
 app = Flask(__name__)
 api = Api(app)
@@ -33,11 +37,12 @@ CORS(app)
 USERS = 'users'
 DELETE = 'delete'
 DEL_USER = f'{USERS}/{DELETE}'
-PRODUCT = 'product'
 ADD_PRODUCT = 'add_product'
 DELETE_PRODUCT = 'delete_product'
 UPDATE_PRODUCT = 'update_product'
 SHOPPING_CART = 'shopping_cart'
+ADD_SHOPPING_CART = 'add_shopping_cart'
+DELETE_SHOPPING_CART = 'delete_shopping_cart'
 SAVED = 'saved'
 DELETE_SAVED = 'delete_saved'
 GET_PRODUCT = "get_product"
@@ -76,7 +81,7 @@ user_fields = api.model('NewUser', {
 @api.route(f'/{DEL_USER}/<username>')
 class DelUser(Resource):
     """
-    {DELETE USER} Deletes a user by username.
+    Deletes a user by username.
     """
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
@@ -98,14 +103,14 @@ class Users(Resource):
     """
     def get(self):
         """
-        {RETRIEVE ALL USERS} This method returns all users.
+        This method returns all users.
         """
         return usr.get_users(), 201
     
     @api.expect(user_fields)
     def post(self):
         """
-        {CREATE NEW USER} This method creates a new user.
+        This method creates a new user.
         """
        
         data = request.get_json()
@@ -124,6 +129,9 @@ class Users(Resource):
         except ValueError as e:
             raise wz.BadRequest(f'{str(e)}')
         
+        
+            
+
 
 product_fields = api.model('NewProduct', {
     prods.USER_ID: fields.String,
@@ -135,18 +143,30 @@ product_fields = api.model('NewProduct', {
     prods.PRODUCT_DATE_POSTED: fields.String,
     prods.PRODUCT_COMMENTS: fields.String,
 })
-@api.route(f'/{PRODUCT}')
-class Product(Resource):
+@api.route(f'/{GET_PRODUCT}')
+class GetProduct(Resource):
     """
-    This class supports creating, retrieving, and deleting products.
+    This class supports fetching all products.
+    """
+    def get(self):
+        """
+        This method returns all products.
+        """
+        return get_prod.get_product(), 201
+
+
+
+
+# for product listing
+@api.route(f'/{ADD_PRODUCT}')
+class AddProduct(Resource):
+    """
+    This class supports users adding their own product on the app
     """
     @api.expect(product_fields)
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
     def post(self):
-        """
-        {CREATE A NEW PRODUCT} This method creates a new product.
-        """
         data = request.get_json()
 
         # validation of product before adding
@@ -172,14 +192,7 @@ class Product(Resource):
             return {'message': 'Product added successfully'}, 201
         else:
             return {'message': 'Failed to add product'}, 409
-        
-    def get(self):
-        """
-        {RETRIEVE ALL PRODUCTS} This method returns all products.
-        """
-        return get_prod.get_product(), 201
-        
-	
+
 
 # Updating product information
 @api.route(f'/{UPDATE_PRODUCT}')
@@ -213,69 +226,54 @@ class UpdateProduct(Resource):
         else:
             return {'message': 'Failed to update product'}, 409
 
-
 shopping_fields = api.model('NewProductForShoppingCart', {
     get_prod.PRODUCT_ID: fields.String,
    
 })
+        
+@api.route(f'/{ADD_SHOPPING_CART}/<username>')
+class AddToShoppingCart(Resource):
+    """
+    This class supports adding to a user's shopping cart
+    """
+    @api.expect(shopping_fields)
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
+    def post(self, username):
+        """
+        This method adds a product to user shopping cart.
+        """
+        data = request.get_json()
+       
+        if '_id' not in data:
+            raise wz.BadRequest(f"_id required for adding to shopping cart")
+        
+        try:
+            result = usr.add_shopping_cart(username, data['_id'])
+            if result:
+                return {"message": "Product added to shopping cart successfully"}, 201
+            else:
+                return {"message": "Failed to add product to shopping cart"}, 409
+        except ValueError as e:
+            raise wz.NotFound(str(e))
 
 @api.route(f'/{SHOPPING_CART}/<username>')
 class ShoppingCart(Resource):
-     
-	"""
-    This class supports a user's shopping cart
-    """
     
 	def get(self, username):
-		""" 
-        {RETRIEVE SHOPPING CART} This method returns the products in a user's shopping cart
-        """
+		""" This method returns the products in a user's shopping cart"""
         
-		return usr.get_shopping_cart(username);    
+		return usr.get_shopping_cart(username);        
 
-	@api.expect(shopping_fields)
-	@api.response(HTTPStatus.OK, 'Success')
-	@api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
-	def post(self, username):
-		"""
-        {ADD TO SHOPPING CART} This method adds a product to user shopping cart.
-        """
-		data = request.get_json()
-       
-		if '_id' not in data:
-			raise wz.BadRequest(f"_id required for adding to shopping cart")
-		try:
-			result = usr.add_shopping_cart(username, data['_id'])
-			if result:
-				return {"message": "Product added to shopping cart successfully"}, 201
-			else:
-				return {"message": "Failed to add product to shopping cart"}, 409
-		except ValueError as e:
-			raise wz.NotFound(str(e))    
+	# @api.expect(shopping_fields)
+	# @api.response(HTTPStatus.OK, 'Success')
+	# @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
+	# def delete(self):
+	# 	"""
+    #     This method deletes a product from user shopping cart.
+    #     """
+	# 	return usr.delete_shopping_cart()
 
-	@api.expect(shopping_fields)
-	@api.response(HTTPStatus.OK, 'Success')
-	@api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
-	def delete(self, username):
-		"""
-        This method deletes a product from user shopping cart.
-        """
-		data = request.get_json()
-        
-		if '_id' not in data:
-			raise wz.BadRequest(f'_id required to remove from shopping cart')
-          
-		try:
-			result = usr.delete_shopping_cart(username, data['_id'])
-			if result:
-				return {"message": "Product removed from shopping cart successfully."}, 201
-			else:
-				return {"message": "Failed to remove product from shopping cart."}, 409
-		except ValueError as e:
-			raise wz.NotFound(str(e))
-          
-        
-        
 #     def calc_checkout_price(self, username):
 #         """
 #         Deletes a product by from the shopping cart of a iser by product name.
@@ -360,7 +358,7 @@ class DeleteSaved(Resource):
     @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
     def delete(self, user_name):
         """
-        Deletes a product by from the saved list of a user by product name.
+        Deletes a product by from the saved list of a iser by product name.
         """
         new_prod_name = "new prod"
         try:
@@ -370,20 +368,39 @@ class DeleteSaved(Resource):
             raise wz.NotFound(f'{str(e)}')
     
 
-    @api.route('/messages/<user1>/<user2>') #change formatting, this is just inital template
-    class Messages(Resource):
-        def get(self, user1, user2):
-            # fetch the messages between user1 and user2 from your database
-            # messages = db.Messages.find({"$or": [{"user1": user1, "user2": user2}, {"user1": user2, "user2": user1}]})
-            # return messages
-            pass
+@api.route('/messages/<user1>/<user2>') #change formatting, this is just inital template
+class Messages(Resource):
+def get(self, user1, user2):
+    try:
+	return get_convo.get_convo(user1, user2)
+    except ValueError as e:
+	raise wz.NotFound(f'{str(e)}')
 
-        # @api.expect(message_fields)
-        def post(self, user1, user2):
-            # Here you would typically add a new message to your database
-            # For example:
-            # db.Messages.insert(api.payload)
-            # return {"message": "Message added successfully"}, HTTPStatus.CREATED
-            pass
+# @api.expect(message_fields)
+def post(self, user1, user2):
+    try:
+	success = add_convo.add_convo(user1, user2)
+	if success:
+	    return {"message": "Message added successfully"}, HTTPStatus.CREATED
+	else:
+	    return {"message": "Message not added"}, HTTPStatus.NOT_ACCEPTABLE
+    except ValueError as e:
+	raise wz.NotAcceptable(f'{str(e)}')
+    
+def update(self, user1, user2, message):
+    try:
+	update_convo.update_convo(user1, user2, message)
+    except ValueError as e:
+	raise wz.NotAcceptable(f'{str(e)}')
+
+def delete(self, user1, user2):
+    try:
+	success = delete_convo.delete_convo(user1, user2)
+	if success:
+	    return {"message": "Message deleted successfully"}, HTTPStatus.OK
+	else:
+	    return {"message": "Message not deleted"}, HTTPStatus.NOT_FOUND
+    except ValueError as e:
+	raise wz.NotFound(f'{str(e)}')
 
 
