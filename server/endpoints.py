@@ -25,6 +25,10 @@ import data.get_product as get_prod
 import data.delete_product as del_prod
 import data.add_followers as add_follower
 import data.get_followers as get_follower
+import data.get_convo as get_convo
+import data.add_convo as add_convo
+import data.update_convo as update_convo
+import data.delete_convo as delete_convo
 
 app = Flask(__name__)
 api = Api(app)
@@ -370,20 +374,39 @@ class DeleteSaved(Resource):
             raise wz.NotFound(f'{str(e)}')
     
 
-    @api.route('/messages/<user1>/<user2>') #change formatting, this is just inital template
-    class Messages(Resource):
-        def get(self, user1, user2):
-            # fetch the messages between user1 and user2 from your database
-            # messages = db.Messages.find({"$or": [{"user1": user1, "user2": user2}, {"user1": user2, "user2": user1}]})
-            # return messages
-            pass
+@api.route('/messages/<user1>/<user2>') #change formatting, this is just inital template
+class Messages(Resource):
+    def get(self, user1, user2):
+        try:
+            return get_convo.get_convo(user1, user2)
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
 
-        # @api.expect(message_fields)
-        def post(self, user1, user2):
-            # Here you would typically add a new message to your database
-            # For example:
-            # db.Messages.insert(api.payload)
-            # return {"message": "Message added successfully"}, HTTPStatus.CREATED
-            pass
+    # @api.expect(message_fields)
+    def post(self, user1, user2):
+        try:
+            success = add_convo.add_convo(user1, user2)
+            if success:
+                return {"message": "Message added successfully"}, HTTPStatus.CREATED
+            else:
+                return {"message": "Message not added"}, HTTPStatus.NOT_ACCEPTABLE
+        except ValueError as e:
+            raise wz.NotAcceptable(f'{str(e)}')
+        
+    def update(self, user1, user2, message):
+        try:
+            update_convo.update_convo(user1, user2, message)
+        except ValueError as e:
+            raise wz.NotAcceptable(f'{str(e)}')
+
+    def delete(self, user1, user2):
+        try:
+            success = delete_convo.delete_convo(user1, user2)
+            if success:
+                return {"message": "Message deleted successfully"}, HTTPStatus.OK
+            else:
+                return {"message": "Message not deleted"}, HTTPStatus.NOT_FOUND
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
 
 
