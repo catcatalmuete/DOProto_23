@@ -1,5 +1,5 @@
 import data.db_connect as dbc
-import users as users
+import data.users as users
 
 MESSAGES_COLLECT = "Messages"
 USER_ID_1 = "userid1"
