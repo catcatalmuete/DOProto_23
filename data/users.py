@@ -4,6 +4,8 @@ This module interfaces to our user data.
 import data.db_connect as dbc
 import data.add_product as add_prod
 from bson import ObjectId
+from werkzeug.security import check_password_hash
+from flask_jwt_extended import create_access_token
 
 USERNAME = "username"
 EMAIL = "email"
@@ -48,6 +50,15 @@ def create_user(first_name: str, last_name: str, username : str, email : str, pa
 def delete_user(username: str):
     dbc.connect_db()
     return dbc.del_one(USERS_COLLECT, {USERNAME: username})
+
+def login_auth(username: str, password: str):
+    dbc.connect_db()
+    found_user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
+    if found_user and check_password_hash(found_user['password'], password):
+            return {'message': 'User login successful'}, 201
+    else:
+        raise ValueError(f"User {username} not found")
+    
 
 def get_shopping_cart(username: str):
     dbc.connect_db()
@@ -138,26 +149,3 @@ def delete_saved(username : str, del_prod : str):
         
         updated_saved = ','.join(map(str, saved_list))
         return dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SAVED: updated_saved}})
-
-
-# def old_get_users():
-#     users = {
-        
-# 		"user_one": {
-#             USERNAME: "test_username_1", 
-#             PASSWORD: "12345"   
-# 		},
-        
-#         "user_two": {
-#             USERNAME: "test_username_2", 
-#             PASSWORD: "12345"      
-# 		},
-#         "user_three": {
-#             USERNAME: "test_username_3", 
-#             PASSWORD: "12345"   
-# 		},
-        
-# 	}
-    
-	
-#     return users

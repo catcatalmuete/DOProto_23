@@ -9,14 +9,10 @@ import sys
 
 from flask import Flask
 from flask_cors import CORS
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
-parent_dir = os.path.join(current_dir, '..')
-sys.path.append(parent_dir)
-
 from flask import request, Flask
 from flask_restx import Resource, Api, fields
+from werkzeug.security import generate_password_hash
+from flask_jwt_extended import create_access_token, JWTManager
 import werkzeug.exceptions as wz
 import data.db_connect as dbc
 import data.users as usr
@@ -26,9 +22,16 @@ import data.delete_product as del_prod
 import data.add_followers as add_follower
 import data.get_followers as get_follower
 
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+parent_dir = os.path.join(current_dir, '..')
+sys.path.append(parent_dir)
+
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
+jwt = JWTManager(app)
 
 USERS = 'users'
 DELETE = 'delete'
@@ -73,6 +76,11 @@ user_fields = api.model('NewUser', {
     usr.FOLLOWERS: fields.List(fields.String),
 })
 
+user_login_fields = api.model('LoginUser', {
+	usr.USERNAME: fields.String,
+    usr.PASSWORD: fields.String,
+})
+
 @api.route(f'/{DEL_USER}/<username>')
 class DelUser(Resource):
     """
@@ -107,15 +115,15 @@ class Users(Resource):
         """
         {CREATE NEW USER} This method creates a new user.
         """
-       
         data = request.get_json()
+        password_hash = generate_password_hash(data['password'], method='scrypt')
         try:
             new_user = usr.create_user(
 				data['first_name'],
 				data['last_name'],
 				data['username'],
 				data['email'],
-				data['password']
+				password_hash
 			)
             if new_user:
                  return {'message': 'User added successfully'}, 201
@@ -124,7 +132,24 @@ class Users(Resource):
         except ValueError as e:
             raise wz.BadRequest(f'{str(e)}')
         
+@api.route(f'/{USERS}/login')
+class UserLogin(Resource):
+    """
+    This class supports authentication for user login.
+    """
+    @api.expect(user_login_fields)
+    def post(self):
+        data = request.get_json()
+        try:
+            result = usr.login_auth(data['username'], data['password'])
+            if result:
+                return {'message' : 'User logged in successfully'}, 201
+            else:
+                 raise wz.BadRequest(f"User not acceptable: {data['username']}")
+        except ValueError as e:
+             raise wz.BadRequest(f'{str(e)}')
 
+        
 product_fields = api.model('NewProduct', {
     prods.USER_ID: fields.String,
     prods.PRODUCT_NAME: fields.String,
