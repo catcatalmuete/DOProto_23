@@ -15,6 +15,7 @@ from werkzeug.security import generate_password_hash
 from flask_jwt_extended import create_access_token, JWTManager
 import werkzeug.exceptions as wz
 import data.db_connect as dbc
+import data.product_form as prod_form
 import data.users as usr
 import data.add_product as prods
 import data.get_product as get_prod
@@ -101,6 +102,24 @@ class DelUser(Resource):
             return {username: 'Deleted'}
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
+        
+
+@api.route(f'/{USERS}/<username>')
+class GetUser(Resource):
+    """
+    {GET USER} Return a user by username.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
+    def get(self, username):
+        """
+        Deletes a user by username.
+        """
+        try:
+            usr.get_user(username)
+            return {'message' : f'Found user with username: {username}.'}
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')		
         
 
 @api.route(f'/{USERS}')
@@ -247,6 +266,11 @@ shopping_fields = api.model('NewProductForShoppingCart', {
     get_prod.PRODUCT_ID: fields.String,
    
 })
+
+@api.route(f'/get_product_form')
+class ProductForm(Resource):
+     def get(self):
+          return prod_form.get_product_form()
 
 @api.route(f'/{SHOPPING_CART}/<username>')
 class ShoppingCart(Resource):

@@ -51,6 +51,10 @@ def delete_user(username: str):
     dbc.connect_db()
     return dbc.del_one(USERS_COLLECT, {USERNAME: username})
 
+def get_user(username: str):
+    dbc.connect_db()
+    return dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
+
 def login_auth(username: str, password: str):
     dbc.connect_db()
     found_user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
