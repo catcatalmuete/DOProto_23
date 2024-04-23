@@ -116,8 +116,8 @@ class GetUser(Resource):
         Deletes a user by username.
         """
         try:
-            usr.get_user(username)
-            return {'message' : f'Found user with username: {username}.'}
+            return usr.get_user(username)
+            #return {'message' : f'Found user with username: {username}.'}
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')		
         
