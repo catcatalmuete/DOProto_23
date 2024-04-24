@@ -2,7 +2,7 @@ import os
 import pymongo as pm
 
 # certifi is for MAC! comment out when done
-#import certifi
+import certifi
 
 LOCAL = "0"
 CLOUD = "1"
@@ -41,7 +41,7 @@ def connect_db():
                                     + '&connect=false'
                                     + '&maxPoolsize=1'
                                     # certifi is for MAC! comment out when done
-                                    #,tlsCAFile=certifi.where()
+                                    ,tlsCAFile=certifi.where()
                                     )
             # PA recommends these settings:
             # + 'connectTimeoutMS=30000&'

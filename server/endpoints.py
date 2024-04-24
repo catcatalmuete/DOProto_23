@@ -120,7 +120,6 @@ class GetUser(Resource):
             #return {'message' : f'Found user with username: {username}.'}
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')		
-        
 
 @api.route(f'/{USERS}')
 class Users(Resource):
@@ -225,9 +224,24 @@ class Product(Resource):
         """
         {RETRIEVE ALL PRODUCTS} This method returns all products.
         """
-        return get_prod.get_product(), 201
+        return get_prod.get_products(), 201
         
-	
+@api.route(f'/{PRODUCT}/<product_id>')
+class GetProduct(Resource):
+    """
+    {GET USER} Return a product by product ID.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
+    def get(self, product_id):
+        """
+        Deletes a user by username.
+        """
+        try:
+            return get_prod.get_product(product_id)
+            #return {'message' : f'Found user with username: {username}.'}
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')	
 
 # Updating product information
 @api.route(f'/{UPDATE_PRODUCT}')
