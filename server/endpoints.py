@@ -253,7 +253,7 @@ class Product(Resource):
         """
         return get_prod.get_products(), 201
         
-@api.route(f'/{PRODUCT}/<product_id>')
+@api.route(f'/{PRODUCT}/prod?=<product_id>')
 class GetProduct(Resource):
     """
     {GET USER} Return a product by product ID.
