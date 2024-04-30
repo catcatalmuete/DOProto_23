@@ -152,7 +152,7 @@ class Users(Resource):
          
     def get(self):
         """
-        {RETRIEVE ALL USERS} This method returns all users. (FOR DEVELOPER USE)
+        {RETRIEVE ALL USERS - DEVELOPERS} This method returns all users.
         """
         return usr.get_users(), 201
     
