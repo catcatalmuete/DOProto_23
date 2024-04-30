@@ -12,7 +12,6 @@ from flask_cors import CORS
 from flask import request, Flask
 from flask_restx import Resource, Api, fields
 from werkzeug.security import generate_password_hash
-from flask_jwt_extended import create_access_token, JWTManager
 import werkzeug.exceptions as wz
 import data.db_connect as dbc
 import data.product_form as prod_form
@@ -36,7 +35,6 @@ sys.path.append(parent_dir)
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
-jwt = JWTManager(app)
 
 USERS = 'users'
 DELETE = 'delete'
@@ -79,6 +77,10 @@ user_fields = api.model('NewUser', {
     usr.SHOPPING_CART: fields.List(fields.String),
     usr.SAVED: fields.List(fields.String),
     usr.FOLLOWERS: fields.List(fields.String),
+    usr.FOLLOWING: fields.List(fields.String),
+    usr.RES_HALL: fields.String, 
+    usr.ADDRESS: fields.String,
+    usr.PRONOUNS: fields.String,
 })
 
 user_login_fields = api.model('LoginUser', {
@@ -116,19 +118,41 @@ class GetUser(Resource):
         Deletes a user by username.
         """
         try:
-            return usr.get_user(username)
-            #return {'message' : f'Found user with username: {username}.'}
+            return  usr.get_user(username)
         except ValueError as e:
-            raise wz.NotFound(f'{str(e)}')		
+            raise wz.NotFound(f'{str(e)}')	
+    @api.expect(user_fields)
+    def put(self, username):
+        """
+        {UPDATE USER PROFILE} This method updates an existing user's profile.
+        """
+        data = request.get_json()
+        existing_user = usr.get_user(username)
+        if existing_user:
+            updated_user = usr.update_user(username, data)
+            if updated_user:
+                return {'message' : 'User profile updated successfully'}, 200
+            else:
+                raise wz.InternalServerError('Failed to update user info')
+        else:
+             raise wz.NotFound('User not found')
+    
+			
+
+                   
+              
+	
+        
 
 @api.route(f'/{USERS}')
 class Users(Resource):
     """
     This class supports fetching all users.
     """
+         
     def get(self):
         """
-        {RETRIEVE ALL USERS} This method returns all users.
+        {RETRIEVE ALL USERS} This method returns all users. (FOR DEVELOPER USE)
         """
         return usr.get_users(), 201
     
@@ -153,6 +177,9 @@ class Users(Resource):
                  raise wz.BadRequest(f"User not acceptable: {data['username']}")
         except ValueError as e:
             raise wz.BadRequest(f'{str(e)}')
+            
+	
+    
         
 @api.route(f'/{USERS}/login')
 class UserLogin(Resource):
@@ -338,6 +365,67 @@ class ShoppingCart(Resource):
 				return {"message": "Product removed from shopping cart successfully."}, 201
 			else:
 				return {"message": "Failed to remove product from shopping cart."}, 409
+		except ValueError as e:
+			raise wz.NotFound(str(e))
+        
+          
+saved_fields = api.model('NewProductForSavedList', {
+    get_prod.PRODUCT_ID: fields.String,
+   
+})
+          
+@api.route(f'/{SAVED}/<username>')
+class SavedProducts(Resource):
+     
+	"""
+    This class supports a user's saved/ favorited products
+    """
+    
+	def get(self, username):
+		""" 
+        {RETRIEVE SAVED PRODUCTS} This method returns the products in a user's saved list
+        """
+        
+		return usr.get_saved(username);    
+
+	@api.expect(saved_fields)  
+	@api.response(HTTPStatus.OK, 'Success')
+	@api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')	
+	def post(self, username):
+		"""
+        {ADD TO SAVED LIST} This method adds a product to user saved list.
+        """
+		data = request.get_json()
+       
+		if '_id' not in data:
+			raise wz.BadRequest(f"_id required for adding to saved list")
+		try:
+			result = usr.add_saved(username, data['_id'])
+			if result:
+				return {"message": "Product added to saved list successfully"}, 201
+			else:
+				return {"message": "Failed to add product to saved list"}, 409
+		except ValueError as e:
+			raise wz.NotFound(str(e))    
+
+	@api.expect(saved_fields)  
+	@api.response(HTTPStatus.OK, 'Success')
+	@api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
+	def delete(self, username):
+		"""
+        This method deletes a product from user saved list.
+        """
+		data = request.get_json()
+        
+		if '_id' not in data:
+			raise wz.BadRequest(f'_id required to remove from saved list')
+          
+		try:
+			result = usr.delete_saved(username, data['_id'])
+			if result:
+				return {"message": "Product removed from saved list successfully."}, 201
+			else:
+				return {"message": "Failed to remove product from saved list."}, 409
 		except ValueError as e:
 			raise wz.NotFound(str(e))
           
