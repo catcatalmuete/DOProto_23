@@ -1,5 +1,16 @@
 """
 This module interfaces to resources for the API Server.
+
+Instructions for use:
+Execute this endpoint on swagger. If you are connected to Mongo
+in the cloud, you will receive the message "MongoDB Connection Successful:.
+
+You can also test if the password is incorrect. If you set the MONGODB_PASSWORD
+to something other than the password, 
+	(example `export MONGODB_PASSWORD=dummyPW),
+	this endpoint will display the message: 
+	"Incorrect password. Connection to MongoDB failed."
+
 """
 import data.db_connect as dbc
 import pymongo as pm
