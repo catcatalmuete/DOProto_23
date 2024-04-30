@@ -5,16 +5,19 @@ import data.db_connect as dbc
 import data.add_product as add_prod
 from bson import ObjectId
 from werkzeug.security import check_password_hash
-from flask_jwt_extended import create_access_token
 
 USERNAME = "username"
 EMAIL = "email"
 PASSWORD = "password"
 FIRST_NAME = "first_name"
 LAST_NAME = "last_name"
-SHOPPING_CART = "shopping_cart" # meant to be a list, but will be saved as a string with commas
-SAVED = "saved" # meant to be a list, but will be saved as a string with commas
+SHOPPING_CART = "shopping_cart" 
+SAVED = "saved"
 FOLLOWERS = "followers"
+FOLLOWING = "following"
+RES_HALL = "res_hall"
+ADDRESS = "address"
+PRONOUNS = "pronouns"
 MIN_USER_NAME_LEN = 6
 MIN_PASSWORD_LEN = 8
 USERS_COLLECT = "users"
@@ -44,6 +47,11 @@ def create_user(first_name: str, last_name: str, username : str, email : str, pa
     new_user[SHOPPING_CART] = []
     new_user[SAVED] = []
     new_user[FOLLOWERS] = []
+    new_user[FOLLOWING] = []
+    new_user[RES_HALL] = ""
+    new_user[ADDRESS] = ""
+    new_user[PRONOUNS] = ""
+    
     _id = dbc.insert_one(USERS_COLLECT, new_user)
     return _id is not None
 
@@ -62,7 +70,20 @@ def login_auth(username: str, password: str):
             return {'message': 'User login successful'}, 201
     else:
         raise ValueError(f"User {username} not found")
-    
+
+def update_user(username: str, data: dict):
+    dbc.connect_db()
+    found_user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
+    if found_user:
+        update_data = {}
+        for key, val in data.items():
+            if key in [FIRST_NAME , LAST_NAME, EMAIL, RES_HALL, ADDRESS, PRONOUNS]:
+                update_data[key] = val
+        result = dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set" : update_data})
+        return result.modified_count > 0
+    else:
+        raise ValueError(f"User {username} not found")
+
 
 def get_shopping_cart(username: str):
     dbc.connect_db()
@@ -127,29 +148,46 @@ def get_saved(username: str):
     dbc.connect_db()
     user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
     if user:
-        saved = user.get(SAVED, "")
-        return saved
+        saved_ids = user.get(SHOPPING_CART, [])
+        saved_products = []
+        for product_id in saved_ids:
+            product = dbc.fetch_one("products", {"_id": product_id})
+            if product:
+                 saved_products.append(product)
+            else:
+                 return {"message": f"Product with ID {product_id} not found."}
+        return saved_products
+    else:
+        raise ValueError(f"User {username} not found")
     
-def add_saved(username: str, prod_name : str):
+def add_saved(username: str, prod_id : str):
     dbc.connect_db()
     user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
     if user:
-        saved = user.get(SAVED, "")
-        saved_list = saved.split(',') if saved else []
-        saved_list.append(prod_name)
-        updated_saved = ','.join(map(str, saved_list))
-        return dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SAVED: updated_saved}})
-       
-def delete_saved(username : str, del_prod : str):
-    dbc.connect_db()
-    user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
-    if user:
-        saved = user.get(SAVED, "")
-        saved_list = saved.split(',') if saved else []
-        try:
-            saved_list.remove(del_prod)
-        except ValueError:
-            pass
+        saved = user.get(SAVED, [])
+        if isinstance(prod_id, str):
+            prod_id = ObjectId(prod_id)
+        saved.append(prod_id)
+        result = dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SAVED: saved}})
+        if result:
+            return {"message": "Product added to saved successfully"}, 201
+        else:
+            return {"message" : "Failed to add product to saved."}, 409
         
-        updated_saved = ','.join(map(str, saved_list))
-        return dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SAVED: updated_saved}})
+    else:
+        raise ValueError(f"User '{username}' not found")
+       
+def delete_saved(username : str, prod_id : str):
+    dbc.connect_db()
+    user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
+    if user:
+        saved = user.get(SAVED, [])
+        if isinstance(prod_id, str):
+            prod_id = ObjectId(prod_id)
+        saved.remove(prod_id)
+        result = dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set": {SAVED : saved}})
+        if result:
+            return {"message": "Product removed from saved successfully"}, 201
+        else:
+            return {"message" : "Failed to remove product from saved."}, 409
+        
