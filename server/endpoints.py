@@ -13,6 +13,7 @@ from flask import request, Flask
 from flask_restx import Resource, Api, fields
 from werkzeug.security import generate_password_hash
 import werkzeug.exceptions as wz
+import data.health_check as health
 import data.db_connect as dbc
 import data.product_form as prod_form
 import data.users as usr
@@ -54,6 +55,7 @@ MAIN_MENU = ""
 USER_ID = "User ID"
 PRODUCT_ID = "Product ID"
 FOLLOW_ID = "Follower ID"
+HEALTH_CHECK = "health_check"
 
 # @api.route('/endpoints')
 # class Endpoints(Resource):
@@ -67,6 +69,19 @@ FOLLOW_ID = "Follower ID"
 #         """
 #         endpoints = sorted(rule.rule for rule in api.app.url_map.iter_rules())
 #         return {"Available endpoints": endpoints}
+
+@api.route(f'/{HEALTH_CHECK}')
+class Healthheck(Resource):
+    """{API SERVER HEALTH CHECK} 
+      This class supports ensuring that all resources for API Server are working
+    """
+    def get(self):
+        """
+        Check MongoDB connection
+        """
+        return health.check_db_connection()
+     
+
 
 user_fields = api.model('NewUser', {
     usr.FIRST_NAME: fields.String,
@@ -136,12 +151,6 @@ class GetUser(Resource):
                 raise wz.InternalServerError('Failed to update user info')
         else:
              raise wz.NotFound('User not found')
-    
-			
-
-                   
-              
-	
         
 
 @api.route(f'/{USERS}')
@@ -152,7 +161,7 @@ class Users(Resource):
          
     def get(self):
         """
-        {RETRIEVE ALL USERS} This method returns all users. (FOR DEVELOPER USE)
+        {RETRIEVE ALL USERS - DEVELOPERS} This method returns all users.
         """
         return usr.get_users(), 201
     
