@@ -126,6 +126,7 @@ class GetUser(Resource):
     """
     {GET USER} Return a user by username.
     """
+    print("GET USER")
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
     def get(self, username):
@@ -133,7 +134,14 @@ class GetUser(Resource):
         Deletes a user by username.
         """
         try:
-            return  usr.get_user(username)
+            user = usr.get_user(username)
+            return  {
+                '_id': user['_id'],
+                'first_name': user['first_name'],
+                'last_name': user['last_name'],
+                'username': user['username'],
+                'email': user['email'],
+            }
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')	
     @api.expect(user_fields)
