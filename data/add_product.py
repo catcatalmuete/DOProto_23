@@ -25,11 +25,7 @@ Params:
 def add_product(user_id : str, name : str, price : int, condition : str, 
 				brand : str, categories : str, date_posted : str, comments: str):
 	dbc.connect_db()
-
-	# check if product already exists
-	found_product = dbc.fetch_one(PRODUCTS_COLLECT, {PRODUCT_NAME: name})
-	if found_product:
-		raise ValueError(f'Duplicate product name: {name=}')
+	
 	new_prod = {}
 	new_prod[USER_ID] = user_id
 	new_prod[PRODUCT_NAME] = name

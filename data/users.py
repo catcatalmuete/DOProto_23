@@ -96,7 +96,7 @@ def get_shopping_cart(username: str):
             if product:
                  shopping_cart_products.append(product)
             else:
-                 return {"message": f"Product with ID {product_id} not found."}
+                 return None
         return shopping_cart_products
     else:
         raise ValueError(f"User {username} not found")
