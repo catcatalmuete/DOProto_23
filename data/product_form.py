@@ -8,7 +8,6 @@ QUANTITY = 'quantity'
 PRICE = 'price'
 CONDITION = 'condition'
 CATEGORIES = 'categories'
-DESCRIPTION = 'description'
 BRAND = 'brand'
 DATE_POSTED = 'date_posted'
 COMMENTS = 'comments'
@@ -80,12 +79,6 @@ PRODUCT_FORM_FIELDS = [
     {
         FLD_NM: COMMENTS,
         ff.QSTN: 'Comments:',
-        ff.PARAM_TYPE: ff.QUERY_STR,
-        ff.OPT: True,
-    },
-    {
-        FLD_NM: DESCRIPTION,
-        ff.QSTN: 'Description:',
         ff.PARAM_TYPE: ff.QUERY_STR,
         ff.OPT: True,
     },

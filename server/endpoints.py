@@ -247,9 +247,10 @@ class Product(Resource):
         {CREATE A NEW PRODUCT} This method creates a new product.
         """
         data = request.get_json()
+        print(data)
 
         # validation of product before adding
-        if 'user_id' not in data or 'name' not in data or 'price' not in data \
+        if 'user_id' not in data or 'product_name' not in data or 'price' not in data \
                 or 'condition' not in data or 'brand' not in data \
                 or 'categories' not in data or 'date_posted' not in data \
                 or 'comments' not in data:
@@ -258,7 +259,7 @@ class Product(Resource):
         # add the product
         new_product = prods.add_product(
             data['user_id'],
-            data['name'],
+            data['product_name'],
             data['price'],
             data['condition'],
             data['brand'],
