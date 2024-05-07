@@ -33,7 +33,14 @@ def get_users() -> dict:
     return users
     
 
-def create_user(first_name: str, last_name: str, username : str, email : str, password : str):
+def create_user(first_name: str, 
+                last_name: str, 
+                username : str, 
+                email : str, 
+                password : str, 
+                res_hall : str, 
+                address : str, 
+                pronouns : str):
     dbc.connect_db()
     found_user = dbc.fetch_one(USERS_COLLECT,{USERNAME: username})
     if found_user:
@@ -48,9 +55,9 @@ def create_user(first_name: str, last_name: str, username : str, email : str, pa
     new_user[SAVED] = []
     new_user[FOLLOWERS] = []
     new_user[FOLLOWING] = []
-    new_user[RES_HALL] = ""
-    new_user[ADDRESS] = ""
-    new_user[PRONOUNS] = ""
+    new_user[RES_HALL] = res_hall
+    new_user[ADDRESS] = address
+    new_user[PRONOUNS] = pronouns
     
     _id = dbc.insert_one(USERS_COLLECT, new_user)
     return _id is not None
@@ -102,7 +109,7 @@ def get_shopping_cart(username: str):
             if product:
                  shopping_cart_products.append(product)
             else:
-                 return {"message": f"Product with ID {product_id} not found."}
+                 return None
         return shopping_cart_products
     else:
         raise ValueError(f"User {username} not found")

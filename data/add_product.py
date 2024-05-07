@@ -2,12 +2,12 @@ import data.db_connect as dbc
 
 PRODUCTS_COLLECT = "products"
 USER_ID = "user_id"
-PRODUCT_NAME = "name"
+PRODUCT_NAME = "product_name"
 PRODUCT_PRICE = "price"
 PRODUCT_CONDITION = "condition"
 PRODUCT_BRAND = "brand"
 PRODUCT_CATEGORIES = "categories"
-PRODUCT_DATE_POSTED = "date posted"
+PRODUCT_DATE_POSTED = "date_posted"
 PRODUCT_COMMENTS = "comments"
 PRODUCT_ID = "_id"
 
@@ -25,11 +25,7 @@ Params:
 def add_product(user_id : str, name : str, price : int, condition : str, 
 				brand : str, categories : str, date_posted : str, comments: str):
 	dbc.connect_db()
-
-	# check if product already exists
-	found_product = dbc.fetch_one(PRODUCTS_COLLECT, {PRODUCT_NAME: name})
-	if found_product:
-		raise ValueError(f'Duplicate product name: {name=}')
+	
 	new_prod = {}
 	new_prod[USER_ID] = user_id
 	new_prod[PRODUCT_NAME] = name

@@ -26,6 +26,7 @@ import data.get_convo as get_convo
 import data.add_convo as add_convo
 import data.update_convo as update_convo
 import data.delete_convo as delete_convo
+import data.res_add as res_adds
 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -56,6 +57,7 @@ USER_ID = "User ID"
 PRODUCT_ID = "Product ID"
 FOLLOW_ID = "Follower ID"
 HEALTH_CHECK = "health_check"
+RES_HALL = "res_hall"
 
 # @api.route('/endpoints')
 # class Endpoints(Resource):
@@ -133,6 +135,7 @@ class GetUser(Resource):
     """
     {GET USER} Return a user by username.
     """
+    print("GET USER")
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
     def get(self, username):
@@ -140,7 +143,17 @@ class GetUser(Resource):
         Deletes a user by username.
         """
         try:
-            return  usr.get_user(username)
+            user = usr.get_user(username)
+            return  {
+                '_id': user['_id'],
+                'first_name': user['first_name'],
+                'last_name': user['last_name'],
+                'username': user['username'],
+                'email': user['email'],
+                'res_hall': user['res_hall'],
+                'address': user['address'],
+                'pronouns': user['pronouns'],
+            }
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
 		
@@ -193,7 +206,10 @@ class Users(Resource):
 				data['last_name'],
 				data['username'],
 				data['email'],
-				password_hash
+				password_hash,
+                data['res_hall'],
+                data['address'],
+                data['pronouns'],
 			)
             if new_user:
                  return {'message': 'User added successfully'}, 201
@@ -246,9 +262,10 @@ class Product(Resource):
         {CREATE A NEW PRODUCT} This method creates a new product.
         """
         data = request.get_json()
+        print(data)
 
         # validation of product before adding
-        if 'user_id' not in data or 'name' not in data or 'price' not in data \
+        if 'user_id' not in data or 'product_name' not in data or 'price' not in data \
                 or 'condition' not in data or 'brand' not in data \
                 or 'categories' not in data or 'date_posted' not in data \
                 or 'comments' not in data:
@@ -257,7 +274,7 @@ class Product(Resource):
         # add the product
         new_product = prods.add_product(
             data['user_id'],
-            data['name'],
+            data['product_name'],
             data['price'],
             data['condition'],
             data['brand'],
@@ -532,7 +549,7 @@ class Saved(Resource):
         return usr.add_saved(username, new_prod_name)
 
 
-@api.route(f'/{DELETE_SAVED}/<user_name>')
+@api.route(f'/{SAVED}/{DELETE}/<user_name>')
 class DeleteSaved(Resource):
     
     @api.response(HTTPStatus.OK, 'Success')
@@ -585,3 +602,71 @@ class Messages(Resource):
             raise wz.NotFound(f'{str(e)}')
 
 
+res_hall_fields = api.model('NewResHall', {
+    res_adds.RES_HALL: fields.String,
+    res_adds.ADDRESS: fields.String,
+})
+@api.route(f'/{RES_HALL}')
+class Res_hall(Resource):
+    """
+    This class supports creating, retrieving, and deleting products.
+    """
+    @api.expect(res_hall_fields)
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
+    def post(self):
+        """
+        {CREATE A NEW RES HALL} 
+        """
+        data = request.get_json()
+
+        # validation of product before adding
+        if 'res_hall' not in data or 'address' not in data:
+            return {'message': 'All fields required for adding residence hall'}
+
+        # add new hall
+        new_hall = res_adds.add_hall(
+            data['res_hall'],
+            data['address'],
+        )
+
+        if new_hall:
+            return {'message': 'Product added successfully'}, 201
+        else:
+            return {'message': 'Failed to add product'}, 409
+        
+    def get(self):
+        """
+        {RETRIEVE ALL PRODUCTS} This method returns all products.
+        """
+        return res_adds.get_all_res_add(), 201
+        
+@api.route(f'/{RES_HALL}/<res_hall>')
+class GetResAdd(Resource):
+    """
+    {GET RES_HALL} Return the residence hall's address.
+    """
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
+    def get(self, res_hall):
+
+        try:
+            return res_adds.get_res_add(res_hall)
+            #return {'message' : f'Found user with username: {username}.'}
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
+        
+@api.route(f'/{RES_HALL}/{DELETE}/<res_id>')
+class DeleteResHall(Resource):
+    
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
+    def delete(self, res_id):
+        """
+        Deletes the res hall from res hall list by its ID.
+        """
+        try:
+            res_adds.delete_res_hall(res_id)
+            return { res_id: 'Deleted'}
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
