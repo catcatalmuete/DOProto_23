@@ -71,18 +71,24 @@ def login_auth(username: str, password: str):
     else:
         raise ValueError(f"User {username} not found")
 
-def update_user(username: str, data: dict):
+def update_user(first_name: str, last_name: str, res_hall: str, address: str, pronouns: str, username: str):
     dbc.connect_db()
-    found_user = dbc.fetch_one(USERS_COLLECT, {USERNAME: username})
-    if found_user:
-        update_data = {}
-        for key, val in data.items():
-            if key in [FIRST_NAME , LAST_NAME, EMAIL, RES_HALL, ADDRESS, PRONOUNS]:
-                update_data[key] = val
-        result = dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set" : update_data})
-        return result.modified_count > 0
-    else:
-        raise ValueError(f"User {username} not found")
+    update_data = {}
+    if first_name:
+        update_data[FIRST_NAME] = first_name
+    if last_name:
+        update_data[LAST_NAME] = last_name
+    if res_hall:
+        update_data[RES_HALL] = res_hall
+    if address:
+        update_data[ADDRESS] = address
+    if pronouns:
+        update_data[PRONOUNS] = pronouns
+        
+    dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set" : update_data})
+    return update_data
+   
+    
 
 
 def get_shopping_cart(username: str):

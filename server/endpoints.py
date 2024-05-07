@@ -10,7 +10,7 @@ import sys
 from flask import Flask
 from flask_cors import CORS
 from flask import request, Flask
-from flask_restx import Resource, Api, fields
+from flask_restx import Resource, Api, fields, reqparse
 from werkzeug.security import generate_password_hash
 import werkzeug.exceptions as wz
 import data.health_check as health
@@ -71,7 +71,7 @@ HEALTH_CHECK = "health_check"
 #         return {"Available endpoints": endpoints}
 
 @api.route(f'/{HEALTH_CHECK}')
-class Healthheck(Resource):
+class HealthCheck(Resource):
     """{API SERVER HEALTH CHECK} 
       This class supports ensuring that all resources for API Server are working
     """
@@ -102,6 +102,13 @@ user_login_fields = api.model('LoginUser', {
 	usr.USERNAME: fields.String,
     usr.PASSWORD: fields.String,
 })
+
+user_update_parser = reqparse.RequestParser()
+user_update_parser.add_argument('first_name', type=str)
+user_update_parser.add_argument('last_name', type=str)
+user_update_parser.add_argument('res_hall', type=str)
+user_update_parser.add_argument('address', type=str)
+user_update_parser.add_argument('pronouns', type=str)
 
 @api.route(f'/{DEL_USER}/<username>')
 class DelUser(Resource):
@@ -135,20 +142,28 @@ class GetUser(Resource):
         try:
             return  usr.get_user(username)
         except ValueError as e:
-            raise wz.NotFound(f'{str(e)}')	
-    @api.expect(user_fields)
+            raise wz.NotFound(f'{str(e)}')
+		
+    @api.expect(user_update_parser)
     def put(self, username):
         """
         {UPDATE USER PROFILE} This method updates an existing user's profile.
         """
-        data = request.get_json()
+        args = user_update_parser.parse_args()
+        
+        first_name = args.get('first_name')
+        last_name = args.get('last_name')
+        res_hall = args.get('res_hall')
+        address = args.get('address')
+        pronouns = args.get('pronouns')
+        
         existing_user = usr.get_user(username)
+        
         if existing_user:
-            updated_user = usr.update_user(username, data)
+            updated_user = usr.update_user(first_name, last_name, res_hall, address, pronouns, existing_user['username'])
             if updated_user:
-                return {'message' : 'User profile updated successfully'}, 200
-            else:
-                raise wz.InternalServerError('Failed to update user info')
+                 return {'message' : f'User successfully updated'}
+                 
         else:
              raise wz.NotFound('User not found')
         
@@ -262,7 +277,7 @@ class Product(Resource):
         """
         return get_prod.get_products(), 201
         
-@api.route(f'/{PRODUCT}/prod?=<product_id>')
+@api.route(f'/{PRODUCT}/<product_id>')
 class GetProduct(Resource):
     """
     {GET USER} Return a product by product ID.
