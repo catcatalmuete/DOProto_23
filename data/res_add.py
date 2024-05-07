@@ -1,18 +1,16 @@
 import data.db_connect as dbc
-import data.add_product as add_prod
 from bson import ObjectId
-from werkzeug.security import check_password_hash
 
 RES_HALL = "res_hall"
 ADDRESS = "address"
 RES_HALL_ID = "_id"
-RES_HALL_COLLECT = "residence_address"
+RES_HALL_COLLECT = "Residence Halls"
 
 def add_hall(res_hall: str, address: str):
     dbc.connect_db()
     found_user = dbc.fetch_one(RES_HALL_COLLECT,{RES_HALL: res_hall})
     if found_user:
-        raise ValueError(f'This residence hall already exists: {res_hall=}')
+        raise ValueError(f'This residence hall already exists: {res_hall}')
     new_res = {}
     new_res[RES_HALL] = res_hall
     new_res[ADDRESS] = address
