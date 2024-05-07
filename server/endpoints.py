@@ -153,6 +153,7 @@ class GetUser(Resource):
                 'res_hall': user['res_hall'],
                 'address': user['address'],
                 'pronouns': user['pronouns'],
+                'followers': user['followers'],
             }
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
