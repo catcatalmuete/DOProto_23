@@ -2,7 +2,7 @@ import os
 import pymongo as pm
 
 # certifi is for MAC! comment out when done
-import certifi
+# import certifi
 
 LOCAL = "0"
 CLOUD = "1"
@@ -33,7 +33,7 @@ def connect_db():
             print("Connecting to Mongo in the cloud.")
             # "mongodb+srv://eileent7129:<password>@doproto.gdknfwd.mongodb.net/?retryWrites=true&w=majority"
             client = pm.MongoClient(f'mongodb+srv://eileent7129:{password}'
-                                    + '@doproto.gdknfwd.mongodb.net/' 
+                                    + '@doproto.gdknfwd.mongodb.net/'
                                     + '?retryWrites=true'
                                     + '&w=majority'
                                     + '&connectTimeoutMS=30000'
@@ -41,7 +41,7 @@ def connect_db():
                                     + '&connect=false'
                                     + '&maxPoolsize=1'
                                     # certifi is for MAC! comment out when done
-                                    ,tlsCAFile=certifi.where()
+                                    # , tlsCAFile=certifi.where()
                                     )
             # PA recommends these settings:
             # + 'connectTimeoutMS=30000&'
@@ -95,9 +95,9 @@ def fetch_all_as_dict(key, collection, db=USER_DB):
         ret[doc[key]] = doc
     return ret
 
+
 def update_one(collection, filt, update, db=USER_DB):
     """
     Update a document
     """
     client[db][collection].update_one(filt, update)
-  
