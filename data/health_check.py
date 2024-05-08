@@ -6,18 +6,18 @@ Execute this endpoint on swagger. If you are connected to Mongo
 in the cloud, you will receive the message "MongoDB Connection Successful:.
 
 You can also test if the password is incorrect. If you set the MONGODB_PASSWORD
-to something other than the password, 
-	(example `export MONGODB_PASSWORD=dummyPW),
-	this endpoint will display the message: 
-	"Incorrect password. Connection to MongoDB failed."
+to something other than the password,
+    (example `export MONGODB_PASSWORD=dummyPW),
+    this endpoint will display the message:
+    "Incorrect password. Connection to MongoDB failed."
 
 """
-import data.db_connect as dbc
+# import data.db_connect as dbc
 import pymongo as pm
 import os
 
-# certifi is for MAC! comment out when done
-import certifi
+#  certifi is for MAC! comment out when done
+# import certifi
 
 LOCAL = "0"
 CLOUD = "1"
@@ -30,19 +30,18 @@ client = None
 MONGO_ID = '_id'
 
 
-
 def check_db_connection():
-	
-	try:
-		if os.environ.get("CLOUD_MONGO", LOCAL) == CLOUD:
-			password = os.environ.get("MONGODB_PASSWORD")
-			if not password:
-				raise ValueError('You must set your password '
-                                 + 'to use Mongo in the cloud.')
-			print("Connecting to Mongo in the cloud.")
 
-			client = pm.MongoClient(f'mongodb+srv://eileent7129:{password}'
-                                    + '@doproto.gdknfwd.mongodb.net/' 
+    try:
+        if os.environ.get("CLOUD_MONGO", LOCAL) == CLOUD:
+            password = os.environ.get("MONGODB_PASSWORD")
+            if not password:
+                raise ValueError('You must set your password '
+                                 + 'to use Mongo in the cloud.')
+            print("Connecting to Mongo in the cloud.")
+
+            client = pm.MongoClient(f'mongodb+srv://eileent7129:{password}'
+                                    + '@doproto.gdknfwd.mongodb.net/'
                                     + '?retryWrites=true'
                                     + '&w=majority'
                                     + '&connectTimeoutMS=30000'
@@ -50,16 +49,18 @@ def check_db_connection():
                                     + '&connect=false'
                                     + '&maxPoolsize=1'
                                     # certifi is for MAC! comment out when done
-                                    ,tlsCAFile=certifi.where()
+                                    # , tlsCAFile=certifi.where()
                                     )
-			
-			_ = client[DB][TEST_COLLECTION].find_one()
-			return {'status' : 'ok', 'message': "MongoDB Connection successful."}, 201
-		
-	except pm.errors.OperationFailure as ex:
-		if "authentication failed" in str(ex):
-			return {'status': 'error', 'message': 'Incorrect password. Connection to MongoDB failed.'}, 401
-		else:
-			return {'status' : 'error' , 'message' : str(ex)}, 500
-	except Exception as ex:
-		return {'status' : 'error' , 'message' : str(ex)}, 500
+
+            _ = client[DB][TEST_COLLECTION].find_one()
+            return ({'status': 'ok', 'message':
+                     "MongoDB Connection successful."}, 201)
+
+    except pm.errors.OperationFailure as ex:
+        if "authentication failed" in str(ex):
+            return ({'status': 'error', 'message':
+                     'Incorrect password. Connection to MongoDB failed.'}, 401)
+        else:
+            return {'status': 'error', 'message': str(ex)}, 500
+    except Exception as ex:
+        return {'status': 'error', 'message': str(ex)}, 500
