@@ -18,7 +18,7 @@ FOLLOWING = "following"
 RES_HALL = "res_hall"
 ADDRESS = "address"
 PRONOUNS = "pronouns"
-MARKET_DESC = "market_description" #market description for user profile
+MARKET_DESC = "market_desc" #market description for user profile
 MIN_USER_NAME_LEN = 6
 MIN_PASSWORD_LEN = 8
 USERS_COLLECT = "users"
@@ -94,7 +94,7 @@ def update_user(first_name: str, last_name: str, res_hall: str, address: str, pr
     if pronouns:
         update_data[PRONOUNS] = pronouns
     if market_desc:
-        update_data[MARKET_DESC]
+        update_data[MARKET_DESC] = market_desc
         
     dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set" : update_data})
     return update_data

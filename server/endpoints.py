@@ -142,7 +142,7 @@ class GetUser(Resource):
     @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
     def get(self, username):
         """
-        Deletes a user by username.
+        Get a user by username.
         """
         try:
             user = usr.get_user(username)
