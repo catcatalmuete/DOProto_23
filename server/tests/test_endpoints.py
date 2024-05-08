@@ -16,11 +16,13 @@ def test_endpoints():
 def test_add_product():
     app = endpoints.app.test_client()
     data = {
-        'name': 'Test Product',
+        'user_id': 'test_user',
+        'product_name': 'Test Product',
         'price' : 10.0,
         'condition' : 'New',
         'brand': 'Test Brand',
         'categories': ['Electronics', 'Apparel'],
+        'date_posted': '2023-11-30',
         'comments' : 'A great product!'
 	}
     response = app.post('/add_product', json=data)

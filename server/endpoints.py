@@ -98,6 +98,7 @@ user_fields = api.model('NewUser', {
     usr.RES_HALL: fields.String, 
     usr.ADDRESS: fields.String,
     usr.PRONOUNS: fields.String,
+    usr.MARKET_DESC: fields.String,
 })
 
 user_login_fields = api.model('LoginUser', {
@@ -111,6 +112,7 @@ user_update_parser.add_argument('last_name', type=str)
 user_update_parser.add_argument('res_hall', type=str)
 user_update_parser.add_argument('address', type=str)
 user_update_parser.add_argument('pronouns', type=str)
+user_update_parser.add_argument('market_desc', type=str)
 
 @api.route(f'/{DEL_USER}/<username>')
 class DelUser(Resource):
@@ -140,7 +142,7 @@ class GetUser(Resource):
     @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
     def get(self, username):
         """
-        Deletes a user by username.
+        Get a user by username.
         """
         try:
             user = usr.get_user(username)
@@ -154,6 +156,8 @@ class GetUser(Resource):
                 'address': user['address'],
                 'pronouns': user['pronouns'],
                 'followers': user['followers'],
+                'following': user['following'],
+                'market_desc': user['market_desc'],
             }
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
@@ -170,11 +174,12 @@ class GetUser(Resource):
         res_hall = args.get('res_hall')
         address = args.get('address')
         pronouns = args.get('pronouns')
+        market_desc = args.get('market_desc')
         
         existing_user = usr.get_user(username)
         
         if existing_user:
-            updated_user = usr.update_user(first_name, last_name, res_hall, address, pronouns, existing_user['username'])
+            updated_user = usr.update_user(first_name, last_name, res_hall, address, pronouns, market_desc, existing_user['username'])
             if updated_user:
                  return {'message' : f'User successfully updated'}
                  
