@@ -14,8 +14,9 @@ PRODUCT_ID = "_id"
 
 
 def get_products():
-	dbc.connect_db()
-	return dbc.fetch_all_as_dict(PRODUCT_ID, PRODUCTS_COLLECT)
+    dbc.connect_db()
+    return dbc.fetch_all_as_dict(PRODUCT_ID, PRODUCTS_COLLECT)
+
 
 def get_product(prod_id: str):
     prod_id = ObjectId(prod_id)
