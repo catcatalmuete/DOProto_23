@@ -87,8 +87,8 @@ class HealthCheck(Resource):
 
 user_fields = api.model('NewUser', {
     usr.FIRST_NAME: fields.String,
-	usr.LAST_NAME: fields.String,
-	usr.USERNAME: fields.String,
+    usr.LAST_NAME: fields.String,
+    usr.USERNAME: fields.String,
     usr.EMAIL: fields.String,
     usr.PASSWORD: fields.String,
     usr.SHOPPING_CART: fields.List(fields.String),
@@ -101,7 +101,7 @@ user_fields = api.model('NewUser', {
 })
 
 user_login_fields = api.model('LoginUser', {
-	usr.USERNAME: fields.String,
+    usr.USERNAME: fields.String,
     usr.PASSWORD: fields.String,
 })
 
@@ -157,7 +157,7 @@ class GetUser(Resource):
             }
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
-		
+        
     @api.expect(user_update_parser)
     def put(self, username):
         """
@@ -203,15 +203,15 @@ class Users(Resource):
         password_hash = generate_password_hash(data['password'], method='scrypt')
         try:
             new_user = usr.create_user(
-				data['first_name'],
-				data['last_name'],
-				data['username'],
-				data['email'],
-				password_hash,
+                data['first_name'],
+                data['last_name'],
+                data['username'],
+                data['email'],
+                password_hash,
                 data['res_hall'],
                 data['address'],
                 data['pronouns'],
-			)
+            )
             if new_user:
                  return {'message': 'User added successfully'}, 201
             else:
@@ -219,7 +219,7 @@ class Users(Resource):
         except ValueError as e:
             raise wz.BadRequest(f'{str(e)}')
             
-	
+    
     
         
 @api.route(f'/{USERS}/login')
@@ -310,7 +310,7 @@ class GetProduct(Resource):
             return get_prod.get_product(product_id)
             #return {'message' : f'Found user with username: {username}.'}
         except ValueError as e:
-            raise wz.NotFound(f'{str(e)}')	
+            raise wz.NotFound(f'{str(e)}')    
 
 # Updating product information
 @api.route(f'/{UPDATE_PRODUCT}')
@@ -358,57 +358,57 @@ class ProductForm(Resource):
 @api.route(f'/{SHOPPING_CART}/<username>')
 class ShoppingCart(Resource):
      
-	"""
+    """
     This class supports a user's shopping cart
     """
     
-	def get(self, username):
-		""" 
+    def get(self, username):
+        """ 
         {RETRIEVE SHOPPING CART} This method returns the products in a user's shopping cart
         """
         
-		return usr.get_shopping_cart(username);    
+        return usr.get_shopping_cart(username);    
 
-	@api.expect(shopping_fields)
-	@api.response(HTTPStatus.OK, 'Success')
-	@api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
-	def post(self, username):
-		"""
+    @api.expect(shopping_fields)
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
+    def post(self, username):
+        """
         {ADD TO SHOPPING CART} This method adds a product to user shopping cart.
         """
-		data = request.get_json()
+        data = request.get_json()
        
-		if '_id' not in data:
-			raise wz.BadRequest(f"_id required for adding to shopping cart")
-		try:
-			result = usr.add_shopping_cart(username, data['_id'])
-			if result:
-				return {"message": "Product added to shopping cart successfully"}, 201
-			else:
-				return {"message": "Failed to add product to shopping cart"}, 409
-		except ValueError as e:
-			raise wz.NotFound(str(e))    
+        if '_id' not in data:
+            raise wz.BadRequest(f"_id required for adding to shopping cart")
+        try:
+            result = usr.add_shopping_cart(username, data['_id'])
+            if result:
+                return {"message": "Product added to shopping cart successfully"}, 201
+            else:
+                return {"message": "Failed to add product to shopping cart"}, 409
+        except ValueError as e:
+            raise wz.NotFound(str(e))    
 
-	@api.expect(shopping_fields)
-	@api.response(HTTPStatus.OK, 'Success')
-	@api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
-	def delete(self, username):
-		"""
+    @api.expect(shopping_fields)
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
+    def delete(self, username):
+        """
         This method deletes a product from user shopping cart.
         """
-		data = request.get_json()
+        data = request.get_json()
         
-		if '_id' not in data:
-			raise wz.BadRequest(f'_id required to remove from shopping cart')
+        if '_id' not in data:
+            raise wz.BadRequest(f'_id required to remove from shopping cart')
           
-		try:
-			result = usr.delete_shopping_cart(username, data['_id'])
-			if result:
-				return {"message": "Product removed from shopping cart successfully."}, 201
-			else:
-				return {"message": "Failed to remove product from shopping cart."}, 409
-		except ValueError as e:
-			raise wz.NotFound(str(e))
+        try:
+            result = usr.delete_shopping_cart(username, data['_id'])
+            if result:
+                return {"message": "Product removed from shopping cart successfully."}, 201
+            else:
+                return {"message": "Failed to remove product from shopping cart."}, 409
+        except ValueError as e:
+            raise wz.NotFound(str(e))
         
           
 saved_fields = api.model('NewProductForSavedList', {
@@ -419,57 +419,57 @@ saved_fields = api.model('NewProductForSavedList', {
 @api.route(f'/{SAVED}/<username>')
 class SavedProducts(Resource):
      
-	"""
+    """
     This class supports a user's saved/ favorited products
     """
     
-	def get(self, username):
-		""" 
+    def get(self, username):
+        """ 
         {RETRIEVE SAVED PRODUCTS} This method returns the products in a user's saved list
         """
         
-		return usr.get_saved(username);    
+        return usr.get_saved(username);    
 
-	@api.expect(saved_fields)  
-	@api.response(HTTPStatus.OK, 'Success')
-	@api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')	
-	def post(self, username):
-		"""
+    @api.expect(saved_fields)  
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')    
+    def post(self, username):
+        """
         {ADD TO SAVED LIST} This method adds a product to user saved list.
         """
-		data = request.get_json()
+        data = request.get_json()
        
-		if '_id' not in data:
-			raise wz.BadRequest(f"_id required for adding to saved list")
-		try:
-			result = usr.add_saved(username, data['_id'])
-			if result:
-				return {"message": "Product added to saved list successfully"}, 201
-			else:
-				return {"message": "Failed to add product to saved list"}, 409
-		except ValueError as e:
-			raise wz.NotFound(str(e))    
+        if '_id' not in data:
+            raise wz.BadRequest(f"_id required for adding to saved list")
+        try:
+            result = usr.add_saved(username, data['_id'])
+            if result:
+                return {"message": "Product added to saved list successfully"}, 201
+            else:
+                return {"message": "Failed to add product to saved list"}, 409
+        except ValueError as e:
+            raise wz.NotFound(str(e))    
 
-	@api.expect(saved_fields)  
-	@api.response(HTTPStatus.OK, 'Success')
-	@api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
-	def delete(self, username):
-		"""
+    @api.expect(saved_fields)  
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not Acceptable')
+    def delete(self, username):
+        """
         This method deletes a product from user saved list.
         """
-		data = request.get_json()
+        data = request.get_json()
         
-		if '_id' not in data:
-			raise wz.BadRequest(f'_id required to remove from saved list')
+        if '_id' not in data:
+            raise wz.BadRequest(f'_id required to remove from saved list')
           
-		try:
-			result = usr.delete_saved(username, data['_id'])
-			if result:
-				return {"message": "Product removed from saved list successfully."}, 201
-			else:
-				return {"message": "Failed to remove product from saved list."}, 409
-		except ValueError as e:
-			raise wz.NotFound(str(e))
+        try:
+            result = usr.delete_saved(username, data['_id'])
+            if result:
+                return {"message": "Product removed from saved list successfully."}, 201
+            else:
+                return {"message": "Failed to remove product from saved list."}, 409
+        except ValueError as e:
+            raise wz.NotFound(str(e))
           
         
         

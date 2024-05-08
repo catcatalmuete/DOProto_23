@@ -1,13 +1,5 @@
 include common.mk
 
-LINTER = flake8
-API_DIR = server
-DB_DIR = db
-REQ_DIR = .
-
-PKG = $(API_DIR)
-PYTESTFLAGS = -vv --verbose --cov-branch --cov-report term-missing --tb=short -W ignore::FutureWarning
-
 FORCE:
 
 prod: tests github

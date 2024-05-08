@@ -2,21 +2,24 @@ export LINTER = flake8
 export PYLINTFLAGS = --exclude=__main__.py 
 
 PYTHONFILES = $($shell ls *.py)
-PYTESTFLAGS = -vv --verbose --cov-branch --cov-report term-missing --tb=short -W ignore::FurtureWarning
+PYTESTFLAGS = -vv --verbose --cov-branch --cov-report term-missing --tb=short
 
 MAIl_METHOD = api
 
 FORCE: 
 
+print:
+	echo "printing"
+
 tests: lint pytests 
 
-lint: $(patsubst %.py,%.pytlint,$(PYTHONFILES))
-
-%.pylint:
-	$(LINTER) $(PYLINTFLAGS) $*.py
+lint: FORCE
+	cd server; $(LINTER) $(PYLINTFLAGS) *.py
+	cd data; $(LINTER) $(PYLINTFLAGS) *.py
 
 pytests: FORCE 
-    export TEST_DB=1; pytest $(PYTESTFLAGS) -- cov=$(PKG)
+	cd server; export TEST_DB=1; pytest # $(PYTESTFLAGS) --cov=server
+	cd data; export TEST_DB=1; pytest # $(PYTESTFLAGS) --cov=data
 
 #test a python file:
 %.py: FORCE
