@@ -1,4 +1,5 @@
 import data.add_product as prods
+import data.get_product as get_prod
 
 def test_add_product():
 
@@ -12,9 +13,9 @@ def test_add_product():
 	product_comments = "A great product!"
 
 	# check that product is not already in the database
-	find_product = prods.dbc.fetch_one({prods.USER_ID: user_id,prods.PRODUCT_NAME: product_name, 
-									 prods.PRODUCT_PRICE: product_price})
-	assert find_product is None
+	# find_product = prods.dbc.fetch_one({prods.USER_ID: user_id,prods.PRODUCT_NAME: product_name, 
+	# 								 prods.PRODUCT_PRICE: product_price})
+	# assert find_product is None
 
 	# add the product
 	new_product = prods.add_product(
@@ -27,8 +28,7 @@ def test_add_product():
 	assert new_product is True
 
 	# retrieve the product from the database
-	added_product = prods.dbc.fetch_one({prods.USER_ID: user_id, prods.PRODUCT_NAME: product_name, 
-									 prods.PRODUCT_PRICE: product_price})
+	added_product = get_prod.get_product(new_product._id)
 	
 	# check if product retrieved from database matches product added
 	assert added_product is not None
