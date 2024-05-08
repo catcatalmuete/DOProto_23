@@ -9,6 +9,7 @@ echo "Project dir = $PROJ_DIR"
 echo "PA domain = $PA_DOMAIN"
 echo "Virtual env = $VENV"
 
+echo "PA password = $PA_PWD"
 if [ -z "$PA_PWD" ]
 then
     echo "The PythonAnywhere password var (PA_PWD) must be set in the env."
@@ -16,7 +17,7 @@ then
 fi
 
 echo "PA user = $PA_USER"
-echo "PA password = $PA_PWD"
+
 
 echo "SSHing to PythonAnywhere."
 sshpass -p $PA_PWD ssh -o "StrictHostKeyChecking no" $PA_USER@ssh.pythonanywhere.com << EOF
