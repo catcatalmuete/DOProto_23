@@ -84,9 +84,11 @@ PRODUCT_FORM_FIELDS = [
     },
 ]
 
+
 # Function to return form fields
 def get_product_form() -> list:
     return PRODUCT_FORM_FIELDS
+
 
 # Function to get a description of the form fields for documentation
 def get_product_form_descr() -> dict:
@@ -95,14 +97,15 @@ def get_product_form_descr() -> dict:
     """
     return ff.get_form_descr(PRODUCT_FORM_FIELDS)
 
+
 # Function to get field names from the form
 def get_product_form_field_names() -> list:
     return ff.get_fld_names(PRODUCT_FORM_FIELDS)
 
+
 def main():
     print(f'Product Form: {get_product_form_descr()}\n')
 
+
 if __name__ == '__main__':
     main()
-
-
