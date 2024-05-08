@@ -18,6 +18,7 @@ FOLLOWING = "following"
 RES_HALL = "res_hall"
 ADDRESS = "address"
 PRONOUNS = "pronouns"
+MARKET_DESC = "market_description" #market description for user profile
 MIN_USER_NAME_LEN = 6
 MIN_PASSWORD_LEN = 8
 USERS_COLLECT = "users"
@@ -58,6 +59,7 @@ def create_user(first_name: str,
     new_user[RES_HALL] = res_hall
     new_user[ADDRESS] = address
     new_user[PRONOUNS] = pronouns
+    new_user[MARKET_DESC] = ""
     
     _id = dbc.insert_one(USERS_COLLECT, new_user)
     return _id is not None
@@ -78,7 +80,7 @@ def login_auth(username: str, password: str):
     else:
         raise ValueError(f"User {username} not found")
 
-def update_user(first_name: str, last_name: str, res_hall: str, address: str, pronouns: str, username: str):
+def update_user(first_name: str, last_name: str, res_hall: str, address: str, pronouns: str, market_desc: str, username: str):
     dbc.connect_db()
     update_data = {}
     if first_name:
@@ -91,6 +93,8 @@ def update_user(first_name: str, last_name: str, res_hall: str, address: str, pr
         update_data[ADDRESS] = address
     if pronouns:
         update_data[PRONOUNS] = pronouns
+    if market_desc:
+        update_data[MARKET_DESC]
         
     dbc.update_one(USERS_COLLECT, {USERNAME: username}, {"$set" : update_data})
     return update_data
