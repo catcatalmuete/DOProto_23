@@ -2,9 +2,14 @@ from .. import endpoints
 import json
 import os
 os.environ['CLOUD_MONGO'] = '1'
+app = endpoints.app.test_client()
+
+def test_health_check():
+    response = app.get(f'/{endpoints.HEALTH_CHECK}')
+    assert response.status_code == 201
+    
 
 def test_users_post():
-    app = endpoints.app.test_client()
     data = {
          'first_name': 'First Name',
          'last_name': 'Last Name',
@@ -17,6 +22,40 @@ def test_users_post():
 	}
     response = app.post(f'/{endpoints.USERS}', json=data)
     assert response.status_code == 201
+    delete_response = app.delete(f'/{endpoints.USERS}/delete/my_username')
+    assert delete_response.status_code == 200
+    
+def test_user_get():
+    data = {
+         'first_name': 'First Name',
+         'last_name': 'Last Name',
+			'username': 'my_username',
+            'email' : 'myemail@email.com',
+            'password' : 'mypassword',
+            'res_hall' : 'Apple Hall',
+            'address': '60 New St',
+            'pronouns' : 'they/them',
+            
+	}
+    post_response = app.post(f'/{endpoints.USERS}', json=data)
+    assert post_response.status_code == 201
+        
+    response = app.get(f'/{endpoints.USERS}/my_username')
+    assert response.status_code == 200
+    expected_data = {
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "username": "my_username",
+        "email": "myemail@email.com",
+        "res_hall": "Apple Hall",
+        "address": "60 New St",
+        "pronouns": "they/them",
+        "followers": [],
+        "following": [],
+        "market_desc": ""
+	}
+    assert response.json == expected_data
+    
     delete_response = app.delete(f'/{endpoints.USERS}/delete/my_username')
     assert delete_response.status_code == 200
     
