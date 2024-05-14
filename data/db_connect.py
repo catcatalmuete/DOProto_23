@@ -51,7 +51,7 @@ def connect_db():
             # but they don't seem necessary
         else:
             print("Connecting to Mongo locally.")
-            client = pm.MongoClient()
+            client = pm.MongoClient('mongodb://127.0.0.1:27017/')
 
 
 def insert_one(collection, doc, db=USER_DB):
