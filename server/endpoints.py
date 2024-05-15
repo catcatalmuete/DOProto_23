@@ -17,7 +17,7 @@ import data.product_form as prod_form
 import data.users as usr
 import data.add_product as prods
 import data.get_product as get_prod
-# import data.delete_product as del_prod
+import data.delete_product as del_prod
 # import data.db_connect as dbc
 import data.add_followers as add_follower
 import data.get_followers as get_follower
@@ -314,17 +314,27 @@ class Product(Resource):
 @api.route(f'/{PRODUCT}/<product_id>')
 class GetProduct(Resource):
     """
-    {GET USER} Return a product by product ID.
+    {GET PRODUCT} Return a product by product ID.
     """
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_FOUND, 'Not Found')
     def get(self, product_id):
         """
-        Deletes a user by username.
+        Returns a product by product ID
         """
         try:
             return get_prod.get_product(product_id)
             # return {'message': f'Found user with username: {username}.'}
+        except ValueError as e:
+            raise wz.NotFound(f'{str(e)}')
+
+    def delete(self, product_id):
+        """
+        Deletes a product by product_id.
+        """
+        try:
+            del_prod.delete_product(product_id)
+            return {product_id: 'Deleted'}
         except ValueError as e:
             raise wz.NotFound(f'{str(e)}')
 

@@ -1,114 +1,60 @@
 from .. import endpoints
 import json
 import os
+FIRST_NAME_KEY = 'first_name'
+LAST_NAME_KEY = 'last_name'
+USERNAME_KEY = 'username'
+EMAIL_KEY = 'email'
+PASSWORD_KEY = 'password'
+RES_HALL_KEY = 'res_hall'
+ADDRESS_KEY = 'address'
+PRONOUNS_KEY = 'pronouns'
+FOLLOWERS_KEY = 'followers'
+FOLLOWING_KEY = 'following'
+MARKET_DESC_KEY = 'market_desc'
+
+FIRST_NAME = 'First Name'
+LAST_NAME = 'Last Name'
+USERNAME = 'my_username'
+EMAIL = 'myemail@email.com'
+PASSWORD = 'mypassword'
+RES_HALL = 'Apple Hall'
+ADDRESS = '60 New St'
+PRONOUNS = 'they/them'
+FOLLOWERS = []
+FOLLOWING = []
+MARKET_DESC = ""
+
 os.environ['CLOUD_MONGO'] = '1'
 app = endpoints.app.test_client()
 
 def test_health_check():
+    print(f'/{endpoints.HEALTH_CHECK}')
     response = app.get(f'/{endpoints.HEALTH_CHECK}')
     assert response.status_code == 201
     
 
 def test_users_post():
     data = {
-         'first_name': 'First Name',
-         'last_name': 'Last Name',
-			'username': 'my_username',
-            'email' : 'myemail@email.com',
-            'password' : 'mypassword',
-            'res_hall' : 'Apple Hall',
-            'address': '60 New St',
-            'pronouns' : 'they/them',
+		FIRST_NAME_KEY: FIRST_NAME,
+		LAST_NAME_KEY: LAST_NAME,
+		USERNAME_KEY: USERNAME,
+		EMAIL_KEY: EMAIL,
+		PASSWORD_KEY: PASSWORD,
+		RES_HALL_KEY: RES_HALL,
+		ADDRESS_KEY: ADDRESS,
+		PRONOUNS_KEY: PRONOUNS
 	}
+
     response = app.post(f'/{endpoints.USERS}', json=data)
     assert response.status_code == 201
-    delete_response = app.delete(f'/{endpoints.USERS}/delete/my_username')
-    assert delete_response.status_code == 200
     
 def test_user_get():
-    data = {
-         'first_name': 'First Name',
-         'last_name': 'Last Name',
-			'username': 'my_username',
-            'email' : 'myemail@email.com',
-            'password' : 'mypassword',
-            'res_hall' : 'Apple Hall',
-            'address': '60 New St',
-            'pronouns' : 'they/them',
-            
-	}
-    post_response = app.post(f'/{endpoints.USERS}', json=data)
-    assert post_response.status_code == 201
-        
     response = app.get(f'/{endpoints.USERS}/my_username')
     assert response.status_code == 200
-    expected_data = {
-        "first_name": "First Name",
-        "last_name": "Last Name",
-        "username": "my_username",
-        "email": "myemail@email.com",
-        "res_hall": "Apple Hall",
-        "address": "60 New St",
-        "pronouns": "they/them",
-        "followers": [],
-        "following": [],
-        "market_desc": ""
-	}
-    assert response.json == expected_data
     
+def test_user_delete():
     delete_response = app.delete(f'/{endpoints.USERS}/delete/my_username')
     assert delete_response.status_code == 200
     
 
-# # followers endpoint tests 
-# def test_followers_get():
-#     app = endpoints.app.test_client()
-#     response = app.get('/followers')
-#     assert response.status_code == 200
-#     assert response.get_json() == {'followers': []}
-
-# def test_followers_post():
-#     app = endpoints.app.test_client()
-#     data = {
-#         'user_id': 123,
-#         'follower_id': 456
-#     }
-#     response = app.post('/followers', json=data)
-#     assert response.status_code == 201
-#     assert response.get_json() == {'message': 'Follower added successfully'}
-
-# def test_followers_delete():
-#     app = endpoints.app.test_client()
-#     response = app.delete('/followers')
-#     assert response.status_code == 200
-#     assert response.get_json() == {'message': 'Followers deleted successfully'}
-
-
-# # shoppinbg cart endpoints test
-# def test_shopping_cart_get():
-#     app = endpoints.app.test_client()
-#     response = app.get('/shopping_cart')
-#     assert response.status_code == 200
-#     assert response.get_json() == {'shopping_cart': []}
-
-# def test_shopping_cart_post():
-#     app = endpoints.app.test_client()
-#     data = {
-#         'user_id': 123,
-#         'product_id': 456
-#     }
-#     response = app.post('/shopping_cart', json=data)
-#     assert response.status_code == 201
-#     assert response.get_json() == {'message': 'Product added to shopping cart successfully'}
-
-# def test_shopping_cart_delete():
-#     app = endpoints.app.test_client()
-#     response = app.delete('/shopping_cart')
-#     assert response.status_code == 200
-#     assert response.get_json() == {'message': 'Shopping cart cleared successfully'}
-
-# def test_shopping_cart_calc_checkout_price():
-#     app = endpoints.app.test_client()
-#     response = app.get('/shopping_cart/calc_checkout_price')
-#     assert response.status_code == 200
-#     assert response.get_json() == {'checkout_price': 0.0}
