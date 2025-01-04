@@ -1,0 +1,57 @@
+React Router
+- Makes a request for index.html, bundle.js, and API endpoint calls
+    - bundle js: looks at the current address and decides what content to show and applies different routing rules
+    - React see a user clicks a link and intercepts the usual navigation event
+    - the address bar updates so the user thinks they are going to a page
+    - react renders a new page/component based on the route
+
+Open console console type console.log(window.location), expand and see pathname.
+
+window.history.pushState( {}, ‘’, ‘/button')
+
+Clicking on a link:
+react component called Link({to})
+event.prevemntDefault() stops standard navigation
+handleClick to detect a click
+window.history.pushstate({}, “”, /route1)
+window.history.pushstate({}, “”, /route2)
+
+Add an event listener for a popstate event
+
+Change the content on the screen:
+
+import {useContext} from 'react'
+import NavigationContext from '../context/navigation'
+export default function Route({path, children}) {
+  const {currentPath} = useContext(NavigationContext)
+
+  if (path === currentPath) {
+    return {children}
+  } else {
+    return null
+  }
+}
+
+App.js: import Route component and pages
+
+import Link from './components/Link'
+import Route from './components/Route'
+import AccordionPage from './pages/AccordionPage'
+import ButtonPage from './pages/ButtonPage'
+
+export default function App() {
+  return (
+    <div>
+      <Link to="/accordion">Go to accordion</Link>
+      <Link to="/button">Go to buttons</Link>
+      <div>
+        <Route path="/accordion">
+          <AccordionPage />
+        </Route>
+        <Route path="/button">
+          <ButtonPage />
+        </Route>
+      </div>
+    </div>
+  )
+}
